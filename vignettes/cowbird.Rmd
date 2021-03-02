@@ -1,0 +1,97 @@
+---
+title: "cowbird"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{cowbird}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+
+```{r setup}
+library(cowbird)
+```
+
+# `cowbird`: Functions behind the cowbird paper
+
+This package can be used to reproduce the analysis done in the cowbird paper.
+
+## Data 
+
+Use `data('cowbird_data')` to load in the dataset used in the paper.
+
+```{r data}
+data('cowbird_data')
+head(cowbird_data)
+```
+
+Note the misnomer: the `data.frame` contains detection data for the hosts and the cowbird. In addition, it contains one site-level covariate (land_use), and one visit-level covariate (observer_b, a dummy variable identifying the observer at the site). 
+
+`make_data_list()` converts the `data.frame` to a list for use in `rjags`
+
+```{r data_list}
+data_list <- make_data_list(cowbird_data)
+str(data_list)
+```
+
+## Fitting models
+
+There are two ways to fit the models described in the paper: fitting each model individually, or fitting them all at once. 
+
+Either way, `rjags` needs a character vector of parameters whose MCMC samples you would like returned. `get_evaluation_parameters(checking_params = TRUE)` returns a vector of parameters needed to do posterior predictive checks and calculate WAIC.
+
+```{r get_parms}
+params <- get_evaluation_parameters(checking_params = TRUE)
+params
+```
+
+### Fit all models
+
+`fit_all_models()` fits each model sequentially and returns a list of output from each model. For speed, I've set the MCMC parameters to very low numbers. 
+
+```{r fit_all}
+fit_list <- fit_all_models(
+  data_list, 
+  params_to_monitor = params,
+  n.chains = 1, 
+  n.adapt = 100, 
+  n.burn = 10,
+  n.iter = 10, 
+  n.thin = 1
+)
+```
+
+### Fit one model
+
+`fit_model()` fits one of the models from the paper individually. 
+
+```{r fit_one}
+model1_fit <- fit_model(
+  'model_1', 
+  data_list,
+  params_to_monitor = NULL, 
+  n.chains = 1, 
+  n.adapt = 100, 
+  n.burn = 10, 
+  n.iter = 10,
+  n.thin = 1
+)
+```
+
+## Checking models
+
+`check_all_models()` performs a posterior predictive check on the model list returned from `fit_all_models()`.
+
+```{r check_all}
+ppc <- check_all_models(fit_list, data_list, just_pvals = TRUE)
+ppc
+```
+
+`check_model()` peforms a posterior predictive check of one model.

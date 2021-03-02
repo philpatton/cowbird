@@ -1,0 +1,143 @@
+model{
+
+    # Priors
+
+    # Host Community
+    for(i in 1:n_host){
+
+        # covariate effects on occurrence, and intercept
+        for(j in 1:n.w){
+            c[i,j] ~ dnorm(mu.c[j], prec.c[j])
+        } #j
+
+        # covariate effects on detection, and intercept
+        for(j in 1:n.o){
+            d[i,j] ~ dnorm(mu.d[j], prec.d[j])
+        } #j
+
+    } #i
+
+    # Hyperpriors for Occupancy
+    for(i in 1:n.w){
+
+        mu.c[i] ~ dnorm(0, 0.1)
+        prec.c[i] <- pow(sd.c[i], -2)
+        sd.c[i] ~ dt(0, 2.25, 1)T(0, )
+
+    }
+
+    # Hyperpriors for Detection
+    for(i in 1:n.o){
+
+        mu.d[i] ~ dnorm(0, 0.1)
+        prec.d[i] <- pow(sd.d[i], -2)
+        sd.d[i] ~ dt(0, 2.25, 1)T(0, )
+
+    }
+
+    # Cowbird
+    # Occupancy
+    for(i in 1:n.v){
+        a[i] ~ dnorm(0, 0.2)
+    }
+
+    # Effect of host species richness
+    kappa ~ dnorm(0,0.2)
+
+    # Detection
+    for(i in 1:n.u){
+        b[i] ~ dnorm(0, 0.2)
+    }
+
+    # Models
+    for (i in 1:n_site){
+        for(j in 1:n_host){
+
+            # Host Community
+            # Occupancy
+            logit(eta[i, j]) <- inprod( t(W[i, ]), c[j, ])
+            tau[i, j] ~ dbern(eta[i, j])
+
+            # Detection
+            for(k in 1:n_visit){
+
+                logit(zeta[i, j, k]) <- inprod(t(O[, i, k]), d[j, ])
+                X[i, j, k] ~ dbern(tau[i, j] * zeta[i, j, k])
+
+                X.new[i, j, k] ~ dbern(tau[i, j] * zeta[i, j, k])
+
+            } # k
+
+        } # j
+
+        # Predicted number of hosts at a site
+        m[i] <- sum(tau[i,])
+
+        # Cowbird
+        # Occupancy
+        logit(psi[i]) = inprod( t(V[i, ]), a[]) + kappa * m[i]
+        z[i] ~ dbern(psi[i])
+
+        # Detection
+        for (k in 1:n_visit){
+
+            logit(theta[i, k]) = inprod( t(U[, i, k]), b[])
+            Y[i, k] ~ dbern(theta[i, k] * z[i])
+
+            Y.new[i, k] ~ dbern(theta[i, k] * z[i])
+
+        } # k
+
+    } # j
+
+    # Predictions
+
+    # Probability of occurrence for cowbird by landuse
+    psi.for <- ilogit(a[1])
+    psi.sha <- ilogit(a[1] + a[2])
+    psi.sun <- ilogit(a[1] + a[3])
+
+    for (i in 1:n_host){
+
+        # Probability of occurrence for host by land use
+        eta.for[i] <- ilogit(c[i, 1])
+        eta.sha[i] <- ilogit(c[i, 1] + c[i, 2])
+        eta.sun[i] <- ilogit(c[i, 1] + c[i, 3])
+
+        # Probability of co-occurrence for host/cowbird by land use
+        coc.for[i] <- psi.for * eta.for[i]
+        coc.sha[i] <- psi.sha * eta.sha[i]
+        coc.sun[i] <- psi.sun * eta.sun[i]
+
+    } #i
+
+    # Number of sites by true occurrence / co-occurrence state
+    for (j in 1:n_host){
+        for(i in 1:n_site){
+
+            # number of sites with both species
+            both_for[i,j] = z[i] * tau[i,j] * W[i, 1]
+            both_sha[i,j] = z[i] * tau[i,j] * W[i, 2]
+            both_sun[i,j] = z[i] * tau[i,j] * W[i, 3]
+
+            # number of sites with just host
+            only_host_for[i,j] = (1 - z[i]) * tau[i,j] * W[i, 1]
+            only_host_sha[i,j] = (1 - z[i]) * tau[i,j] * W[i, 2]
+            only_host_sun[i,j] = (1 - z[i]) * tau[i,j] * W[i, 3]
+
+        }
+
+        n_both_for[j] = sum(both_for[, j])
+        n_both_sha[j] = sum(both_sha[, j])
+        n_both_sun[j] = sum(both_sun[, j])
+
+        n_only_for[j] = sum(only_host_for[, j])
+        n_only_sha[j] = sum(only_host_sha[, j])
+        n_only_sun[j] = sum(only_host_sun[, j])
+
+    }
+
+    n_sites_w_two <- sum(W[,2])
+    n_sites_w_three <- sum(W[,3])
+
+}
