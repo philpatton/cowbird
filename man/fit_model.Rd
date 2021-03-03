@@ -12,7 +12,8 @@ fit_model(
   n.adapt = 100,
   n.burn = 10,
   n.iter = 10,
-  n.thin = 1
+  n.thin = 1,
+  paper_mcmc_params = FALSE
 )
 }
 \arguments{

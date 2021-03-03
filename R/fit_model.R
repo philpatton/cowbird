@@ -23,7 +23,7 @@
 fit_model <- function(model = c('model_1', 'model_2', 'model_3'), data_list,
                       params_to_monitor = NULL, n.chains = 1,
                       n.adapt = 100, n.burn = 10, n.iter = 10,
-                      n.thin = 1) {
+                      n.thin = 1, paper_mcmc_params = FALSE) {
 
     if (model == 'model_1') {
 
@@ -42,12 +42,20 @@ fit_model <- function(model = c('model_1', 'model_2', 'model_3'), data_list,
         stop("model not found. try 'model_1', 'model_2', or 'model_3'.")
     }
 
-    start_time <- Sys.time()
+    if (paper_mcmc_params) {
+        n.chains <- 2
+        n.adapt <- 40000
+        n.burn <- 40000
+        n.iter <- 10000
+        n.thin <- 1
+    }
 
     # parameters to monitor
     if (is.null(params_to_monitor))  params_to_monitor <- get_hyper_parameters()
 
     initial_values <- initialize_values(data_list)
+
+    start_time <- Sys.time()
 
     # fit model
     jags_model <- rjags::jags.model(
@@ -55,8 +63,7 @@ fit_model <- function(model = c('model_1', 'model_2', 'model_3'), data_list,
         n.adapt = n.adapt,
         inits = initial_values,
         n.chains = n.chains,
-        data = data_list,
-        quiet = TRUE
+        data = data_list
     )
 
     update(jags_model, n.burn)
@@ -102,7 +109,7 @@ fit_all_models <- function(data_list, params_to_monitor = NULL,
                            n.chains = 1, n.adapt = 100, n.burn = 10,
                            n.iter = 10, n.thin = 1) {
 
-    if (is.null(params_to_monitor))  params_to_monitor <- get_ppc_parameters()
+    if (is.null(params_to_monitor))  params_to_monitor <- get_hyper_parameters()
 
     fit1 <- fit_model(
         'model_1',
