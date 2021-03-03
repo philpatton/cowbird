@@ -6,7 +6,7 @@
 #' @param data_list list made from \code{make_data_list()}, containing detection
 #' matrices for cowbird and hosts
 #'
-#' @return a function, suitable for use in \code{rjags::jags.model()}
+#' @return list, suitable for use in \code{rjags::jags.model()}
 #' @export
 
 initialize_values <- function(data_list) {
@@ -14,21 +14,15 @@ initialize_values <- function(data_list) {
     X <- data_list$X
     Y <- data_list$Y
 
-    naive_state_host <- apply(X, c(1,2), sum, na.rm = T)
-    naive_state_host[naive_state_host > 0] <- 1
+    # output from calc_naive_state_() functions is logical
+    naive_state_host <- calc_naive_state_host(X) * 1
+    naive_state_cow <- calc_naive_state_cowbird(Y) * 1
 
-    naive_state_cow <- apply(Y, 1, sum, na.rm = T)
-    naive_state_cow[naive_state_cow > 0] <- 1
-
-    intial_values <- function() {
-        list(
-            z = naive_state_cow,
-            tau = naive_state_host,
-            .RNG.name = 'base::Super-Duper',
-            .RNG.seed = 17
-        )
-    }
-
-    intial_values
+    list(
+        z = naive_state_cow,
+        tau = naive_state_host,
+        .RNG.name = "base::Marsaglia-Multicarry",
+        .RNG.seed = 17
+    )
 
 }
