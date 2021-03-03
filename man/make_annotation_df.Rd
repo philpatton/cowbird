@@ -7,7 +7,7 @@
 make_annotation_df(ppc_results)
 }
 \arguments{
-\item{ppc_results}{output from \code{\link{posterior_predictive_check}}}
+\item{ppc_results}{output from \code{\link{check_model}}}
 }
 \value{
 data.frame

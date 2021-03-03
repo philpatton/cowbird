@@ -7,7 +7,7 @@
 plot_ppc(ppc_results, model = c("Model 1", "Model 2", "Model 3"))
 }
 \arguments{
-\item{ppc_results}{output from \code{\link{posterior_predictive_check}}}
+\item{ppc_results}{output from \code{\link{check_model}}}
 
 \item{model}{character. specifies which model is being checked.}
 }
