@@ -6,7 +6,7 @@
 #' @return character vector of parameter names
 #'
 #' @export
-get_ppc_parameters <- function() {
+get_checking_parameters <- function() {
 
     params <- c(
         'X.new',
@@ -34,13 +34,13 @@ get_evaluation_parameters <- function(checking_params = FALSE) {
         'theta'
     )
 
-    if (checking_params) params <- c(params, get_ppc_parameters())
+    if (checking_params) params <- c(params, get_checking_parameters())
 
     params
 
 }
 
-#' Generates vector of parameter needed to evaluate models
+#' Generates vector of of the hyper parameters
 #'
 #' @return character vector of parameter names
 #'
@@ -62,6 +62,45 @@ get_hyper_parameters <- function() {
 
 }
 
+#' Generates vector of parameters in the Table 1
+#'
+#' @return character vector of parameter names
+#'
+#' @export
+get_table1_parameters <- function() {
+
+    params <- get_hyper_parameters()
+
+    params
+
+}
+
+#' Generates vector of parameters in the Table 2
+#'
+#' @return character vector of parameter names
+#'
+#' @export
+get_table2_parameters <- function() {
+
+    params <- c(get_hyper_parameters(), 'kappa')
+
+    params
+
+}
+
+#' Generates vector of parameters in the Table 3
+#'
+#' @return character vector of parameter names
+#'
+#' @export
+get_table3_parameters <- function() {
+
+    params <- c(get_hyper_parameters(), 'e', 'rho')
+
+    params
+
+}
+
 #' Generates vector of parameter used in model predictions
 #'
 #' Generates a vector of names of parameters that are used to in the predictions
@@ -70,7 +109,7 @@ get_hyper_parameters <- function() {
 #' @return character vector of parameter names
 #'
 #' @export
-get_predicition_params <- function() {
+get_predicition_parameters <- function() {
 
     params <- c(
         'coc.for',

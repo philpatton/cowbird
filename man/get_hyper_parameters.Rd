@@ -2,7 +2,7 @@
 % Please edit documentation in R/get_parameters.R
 \name{get_hyper_parameters}
 \alias{get_hyper_parameters}
-\title{Generates vector of parameter needed to evaluate models}
+\title{Generates vector of of the hyper parameters}
 \usage{
 get_hyper_parameters()
 }
@@ -10,5 +10,5 @@ get_hyper_parameters()
 character vector of parameter names
 }
 \description{
-Generates vector of parameter needed to evaluate models
+Generates vector of of the hyper parameters
 }
