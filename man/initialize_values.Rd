@@ -11,7 +11,7 @@ initialize_values(data_list)
 matrices for cowbird and hosts}
 }
 \value{
-a function, suitable for use in \code{rjags::jags.model()}
+list, suitable for use in \code{rjags::jags.model()}
 }
 \description{
 Initializes values for MCMC, namely, the occurrence states of the parasites
