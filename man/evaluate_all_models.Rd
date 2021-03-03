@@ -7,9 +7,9 @@
 evaluate_all_models(fit_list, data_list)
 }
 \arguments{
-\item{data_list}{list. output from \code{make_data_list} function.}
+\item{fit_list}{list. output from \code{fit_all_models} function.}
 
-\item{model_fit}{list. output from \code{fit_all_models} function.}
+\item{data_list}{list. output from \code{make_data_list} function.}
 }
 \value{
 data.frame of estimates for WAIC, elppd, and pdWAIC
