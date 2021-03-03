@@ -44,10 +44,10 @@ sites_with_both_observed <- function(data_list) {
 #' @return numeric array
 sites_with_both_predicted <- function(model_fit) {
 
-    samples <- bundle_ppc_samples(model_fit)
+    samples <- bundle_mcmc_samples(model_fit)
 
-    x_samples <- samples$x_samples
-    y_samples <- samples$y_samples
+    x_samples <- samples$X.new_samples
+    y_samples <- samples$Y.new_samples
 
     naive_state_host <- apply(x_samples, c(1, 2, 4), is_detected)
     naive_state_cowbird <- apply(y_samples, c(1, 3), is_detected)
@@ -81,6 +81,12 @@ sites_with_both_predicted <- function(model_fit) {
 #'
 #' @export
 check_model <- function(model_fit, data_list, just_pvals = TRUE){
+
+    has_checking_params <- all(c('X.new', 'Y.new') %in% names(model_fit))
+
+    if (!has_checking_params) {
+        stop('model_fit must have samples for "X.new" and "Y.new"')
+    }
 
     observed <- sites_with_both_observed(data_list)
 

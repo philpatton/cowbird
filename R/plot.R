@@ -7,7 +7,7 @@
 #' @return data.frame
 make_cooccur_plot_df <- function(model_fit) {
 
-    model_fit <- bundle_pred_samples(model_fit)
+    model_fit <- bundle_mcmc_samples(model_fit)
 
     average <- sapply(model_fit, function(x) apply(x, 1, mean))
     average <- reshape2::melt(
@@ -118,7 +118,7 @@ save_occurrence_plot <- function(plot, plot_file) {
 #' @return data.frame
 make_sites_with_both_df <- function(model_fit) {
 
-    samples <- bundle_pred_samples(model_fit)
+    samples <- bundle_mcmc_samples(model_fit)
 
     samples <- samples[grep('n_both_', names(samples))]
 
@@ -204,7 +204,7 @@ save_sites_with_both <- function(plot, plot_file) {
 #' @return data.frame
 make_just_host_df <- function(model_fit) {
 
-    samples <- bundle_pred_samples(model_fit)
+    samples <- bundle_mcmc_samples(model_fit)
 
     samples <- samples[grep('n_only_', names(samples))]
 
@@ -288,7 +288,7 @@ save_just_hosts <- function(plot, plot_file) {
 #' This data.frame is used to generate the annotations of the observed number
 #' as well as the p-values.
 #'
-#' @param ppc_results output from \code{\link{posterior_predictive_check}}
+#' @param ppc_results output from \code{\link{check_model}}
 #'
 #' @return data.frame
 make_annotation_df <- function(ppc_results) {
@@ -310,7 +310,7 @@ make_annotation_df <- function(ppc_results) {
 #'
 #' Generate subplots used to generate
 #'
-#' @param ppc_results output from \code{\link{posterior_predictive_check}}
+#' @param ppc_results output from \code{\link{check_model}}
 #' @param model character. specifies which model is being checked.
 #'
 #' @return ggplot2 object

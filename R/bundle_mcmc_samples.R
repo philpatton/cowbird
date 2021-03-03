@@ -1,67 +1,29 @@
-#' Function to converts MCMC lists to arrays
-#'
-#' This function is used to make manipulation of the mcmc samples easier.
-#' It also only selects the first chain
-#'
-#' @param model_fit list. output from \code{fit_model()}
-#'
-#' @return array
-#'
-bundle_evaluation_samples = function(model_fit) {
-    #mcmclist = mcmc list
-
-    theta_samples <- model_fit$theta[ , , , 1]
-    psi_samples <- model_fit$psi[ , , 1]
-    eta_samples <- model_fit$eta[ , , , 1]
-    zeta_samples <- model_fit$zeta[ , , , , 1]
-
-    samples = list(
-        theta_samples = theta_samples,
-        psi_samples = psi_samples,
-        eta_samples = eta_samples,
-        zeta_samples = zeta_samples
-    )
-
-    samples
-
-}
-
 #' Function to bundles mcmc samples into a list
 #'
-#' This function is used to make manipulation of the mcmc samples easier.
-#' It also reduces the
+#' This function is used to make manipulation of the mcmc samples easier. The
+#' default output from \code{rjags::jags.samples} is less predictable than
+#' a standard array.
+#'
+#' This function also concatenates the MCMC chains into one array.
 #'
 #' @param model_fit list. output from \code{fit_model()}
 #'
 #' @return array
 #'
-bundle_ppc_samples = function(model_fit) {
-    #mcmclist = mcmc list
+bundle_mcmc_samples <- function(model_fit) {
 
-    x_samples <- model_fit$X.new[ , , , , 1]
-    y_samples <- model_fit$Y.new[ , , , 1]
+    # convert list of mcmc.arrays to list of regular arrays
+    array_list <- lapply(model_fit, function(x) array(x, dim = dim(x)))
 
-    samples = list(
-        x_samples = x_samples,
-        y_samples = y_samples
+    # concatenate samples from different chains (chain is the last dimension)
+    mcmc_samples <- lapply(
+        array_list,
+        function(x) apply(x, seq_len(length(dim(x)) -1), c)
     )
 
-    samples
+    names(mcmc_samples) <- paste0(names(mcmc_samples), '_samples')
+
+    mcmc_samples
 
 }
 
-#' Function to bundles mcmc samples into a list
-#'
-#' This function is used to make manipulation of the mcmc samples easier.
-#'
-#' @param model_fit list. output from \code{fit_model()}
-#'
-#' @return array
-#'
-bundle_pred_samples = function(model_fit) {
-
-    prediction_samples <- lapply(model_fit, function(x) `[`(x, , , 1))
-
-    prediction_samples
-
-}

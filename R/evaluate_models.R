@@ -117,7 +117,13 @@ calc_likelihood_cowbird = function(Y, theta_samples, psi_samples) {
 #' @export
 evaluate_model = function(model_fit, data_list) {
 
-    samples <- bundle_evaluation_samples(model_fit)
+    has_eval_samples <- all(get_evaluation_parameters() %in% names(model_fit))
+
+    if (!has_eval_samples) {
+        stop('model_fit must have samples for eta, zeta, psi, and theta')
+    }
+
+    samples <- bundle_mcmc_samples(model_fit)
 
     likelihood_cowbird = calc_likelihood_cowbird(
         Y = data_list$Y,
@@ -148,7 +154,7 @@ evaluate_model = function(model_fit, data_list) {
 #' WAIC is used to estimate the parsimony of each model.
 #'
 #' @param data_list list. output from \code{make_data_list} function.
-#' @param model_fit list. output from \code{fit_all_models} function.
+#' @param fit_list list. output from \code{fit_all_models} function.
 #'
 #' @return data.frame of estimates for WAIC, elppd, and pdWAIC
 #'
