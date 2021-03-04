@@ -13,7 +13,7 @@ fit_model(
   n.burn = 10,
   n.iter = 10,
   n.thin = 1,
-  paper_mcmc_params = FALSE
+  mcmc_params_paper = FALSE
 )
 }
 \arguments{
@@ -35,13 +35,20 @@ before saving samples}
 \item{n.iter}{integer representing the number of MCMC iterations to save}
 
 \item{n.thin}{integer representing the number of MCMC iterations to thin}
+
+\item{mcmc_params_paper}{logical. should we fit the model using the MCMC
+parameters described in the paper?}
 }
 \value{
 list, elements of class \code{rjags::mcarray}
 }
 \description{
 Fit the cowbird-host co-occurrence models described in Patton et al. (Year
-TBD).
+TBD) using package rjags.
+}
+\details{
+The default MCMC parameters are set for quick model fitting. To use the MCMC
+parameters described in the papers, use mcmc_params_paper = TRUE.
 }
 \seealso{
 rjags documentation for fitting models with rjags

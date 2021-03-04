@@ -1,7 +1,10 @@
 #' Fit the cowbird-host co-occurrence models
 #'
 #' Fit the cowbird-host co-occurrence models described in Patton et al. (Year
-#' TBD).
+#' TBD) using package rjags.
+#'
+#' The default MCMC parameters are set for quick model fitting. To use the MCMC
+#' parameters described in the papers, use mcmc_params_paper = TRUE.
 #'
 #' @param model string indicating which model is to be fit.
 #' @param data_list list of data from \code{make_data_list()}
@@ -14,6 +17,8 @@
 #' before saving samples
 #' @param n.iter integer representing the number of MCMC iterations to save
 #' @param n.thin integer representing the number of MCMC iterations to thin
+#' @param mcmc_params_paper logical. should we fit the model using the MCMC
+#' parameters described in the paper?
 #'
 #' @return list, elements of class \code{rjags::mcarray}
 #'
@@ -23,7 +28,7 @@
 fit_model <- function(model = c('model_1', 'model_2', 'model_3'), data_list,
                       params_to_monitor = NULL, n.chains = 1,
                       n.adapt = 100, n.burn = 10, n.iter = 10,
-                      n.thin = 1, paper_mcmc_params = FALSE) {
+                      n.thin = 1, mcmc_params_paper = FALSE) {
 
     if (model == 'model_1') {
 
@@ -42,7 +47,7 @@ fit_model <- function(model = c('model_1', 'model_2', 'model_3'), data_list,
         stop("model not found. try 'model_1', 'model_2', or 'model_3'.")
     }
 
-    if (paper_mcmc_params) {
+    if (mcmc_params_paper) {
         n.chains <- 2
         n.adapt <- 40000
         n.burn <- 40000
