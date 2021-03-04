@@ -6,43 +6,43 @@ model{
     for(i in 1:n_host){
 
         # covariate effects on occurrence, and intercept
-        for(j in 1:n.w){
-            c[i,j] ~ dnorm(mu.c[j], prec.c[j])
+        for(j in 1:n_w){
+            c[j,i] ~ dnorm(mu_c[j], prec_c[j])
         } #j
 
         # covariate effects on detection, and intercept
-        for(j in 1:n.o){
-            d[i,j] ~ dnorm(mu.d[j], prec.d[j])
+        for(j in 1:n_o){
+            d[j,i] ~ dnorm(mu_d[j], prec_d[j])
         } #j
 
     } #i
 
     # Hyperpriors for Occupancy
-    for(i in 1:n.w){
+    for(i in 1:n_w){
 
-        mu.c[i] ~ dnorm(0, 0.1)
-        prec.c[i] <- pow(sd.c[i], -2)
-        sd.c[i] ~ dt(0, 2.25, 1)T(0, )
+        mu_c[i] ~ dnorm(0, 0.1)
+        prec_c[i] <- pow(sd_c[i], -2)
+        sd_c[i] ~ dt(0, 2.25, 1)T(0, )
 
     }
 
     # Hyperpriors for Detection
-    for(i in 1:n.o){
+    for(i in 1:n_o){
 
-        mu.d[i] ~ dnorm(0, 0.1)
-        prec.d[i] <- pow(sd.d[i], -2)
-        sd.d[i] ~ dt(0, 2.25, 1)T(0, )
+        mu_d[i] ~ dnorm(0, 0.1)
+        prec_d[i] <- pow(sd_d[i], -2)
+        sd_d[i] ~ dt(0, 2.25, 1)T(0, )
 
     }
 
     # Cowbird
     # Occupancy
-    for(i in 1:n.v){
+    for(i in 1:n_v){
         a[i] ~ dnorm(0, 0.2)
     }
 
     # Detection
-    for(i in 1:n.u){
+    for(i in 1:n_u){
         b[i] ~ dnorm(0, 0.2)
     }
 
@@ -52,13 +52,13 @@ model{
 
             # Host Community
             # Occupancy
-            logit(eta[i, j]) <- inprod( t(W[i, ]), c[j, ])
+            logit(eta[i, j]) <- inprod( W[i, ], c[, j])
             tau[i, j] ~ dbern(eta[i, j])
 
             # Detection
             for(k in 1:n_visit){
 
-                logit(zeta[i, j, k]) <- inprod(t(O[, i, k]), d[j, ])
+                logit(zeta[i, j, k]) <- inprod(O[, i, k], d[, j])
                 X[i, j, k] ~ dbern(tau[i, j] * zeta[i, j, k])
 
                 X.new[i, j, k] ~ dbern(tau[i, j] * zeta[i, j, k])
@@ -92,9 +92,9 @@ model{
     for (i in 1:n_host){
 
         # Probability of occurrence for host by land use
-        eta.for[i] <- ilogit(c[i, 1])
-        eta.sha[i] <- ilogit(c[i, 1] + c[i, 2])
-        eta.sun[i] <- ilogit(c[i, 1] + c[i, 3])
+        eta.for[i] <- ilogit(c[1, i])
+        eta.sha[i] <- ilogit(c[1, i] + c[2, i])
+        eta.sun[i] <- ilogit(c[1, i] + c[3, i])
 
         # Probability of co-occurrence for host/cowbird by land use
         coc.for[i] <- psi.for * eta.for[i]

@@ -48,10 +48,10 @@ get_evaluation_parameters <- function(checking_params = FALSE) {
 get_hyper_parameters <- function() {
 
     params <- c(
-        'mu.c',
-        'sd.c',
-        'mu.d',
-        'sd.d',
+        'mu_c',
+        'sd_c',
+        'mu_d',
+        'sd_d',
         'a',
         'b',
         'c',
@@ -115,12 +115,12 @@ get_predicition_parameters <- function() {
         'coc.for',
         'coc.sha',
         'coc.sun',
-        'nrfo',
-        'nrsh',
-        'nrsu',
-        'nsfo',
-        'nssh',
-        'nssu'
+        'n_both_for',
+        'n_both_sha',
+        'n_both_sun',
+        'n_only_for',
+        'n_only_sha',
+        'n_only_sun'
     )
 
     params

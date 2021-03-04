@@ -6,38 +6,38 @@ model{
     for(i in 1:n_host){
 
         # covariate effects on occurrence, and intercept
-        for(j in 1:n.w){
-            c[i,j] ~ dnorm(mu.c[j], prec.c[j])
+        for(j in 1:n_w){
+            c[i,j] ~ dnorm(mu_c[j], prec_c[j])
         } #j
 
         # covariate effects on detection, and intercept
-        for(j in 1:n.o){
-            d[i,j] ~ dnorm(mu.d[j], prec.d[j])
+        for(j in 1:n_o){
+            d[i,j] ~ dnorm(mu_d[j], prec_d[j])
         } #j
 
     } #i
 
     # Hyperpriors for Occupancy
-    for(i in 1:n.w){
+    for(i in 1:n_w){
 
-        mu.c[i] ~ dnorm(0, 0.1)
-        prec.c[i] <- pow(sd.c[i], -2)
-        sd.c[i] ~ dt(0, 2.25, 1)T(0, )
+        mu_c[i] ~ dnorm(0, 0.1)
+        prec_c[i] <- pow(sd_c[i], -2)
+        sd_c[i] ~ dt(0, 2.25, 1)T(0, )
 
     }
 
     # Hyperpriors for Detection
-    for(i in 1:n.o){
+    for(i in 1:n_o){
 
-        mu.d[i] ~ dnorm(0, 0.1)
-        prec.d[i] <- pow(sd.d[i], -2)
-        sd.d[i] ~ dt(0, 2.25, 1)T(0, )
+        mu_d[i] ~ dnorm(0, 0.1)
+        prec_d[i] <- pow(sd_d[i], -2)
+        sd_d[i] ~ dt(0, 2.25, 1)T(0, )
 
     }
 
     # Cowbird
     # Occupancy
-    for(i in 1:n.v){
+    for(i in 1:n_v){
         a[i] ~ dnorm(0, 0.2)
     }
 
@@ -45,7 +45,7 @@ model{
     kappa ~ dnorm(0,0.2)
 
     # Detection
-    for(i in 1:n.u){
+    for(i in 1:n_u){
         b[i] ~ dnorm(0, 0.2)
     }
 

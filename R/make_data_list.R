@@ -129,12 +129,12 @@ make_data_list <- function(cowbird_data) {
     v <- w
 
     # number of site covariates for cowbird and hosts, respectively
-    n.w <- dim(w)[2]
-    n.v <- dim(v)[2]
+    n_w <- dim(w)[2]
+    n_v <- dim(v)[2]
 
     # number of visit covariates for cowbird and hosts, respectively
-    n.o <- dim(o)[1]
-    n.u <- dim(u)[1]
+    n_o <- dim(o)[1]
+    n_u <- dim(u)[1]
 
     # number of sites, hosts, and visits
     n_site = dim(x)[1]
@@ -148,10 +148,10 @@ make_data_list <- function(cowbird_data) {
         U = u,
         W = w,
         V = v,
-        n.w = n.w,
-        n.v = n.v,
-        n.o = n.o,
-        n.u = n.u,
+        n_w = n_w,
+        n_v = n_v,
+        n_o = n_o,
+        n_u = n_u,
         n_site = n_site,
         n_host = n_host,
         n_visit = n_visit
