@@ -125,6 +125,12 @@ check_model <- function(model_fit, data_list, just_pvals = TRUE){
 #' @export
 check_all_models <- function(fit_list, data_list, just_pvals = TRUE){
 
-    ppc <- sapply(fit_list, check_model, data_list)
+    if (just_pvals)  {
+        ppc <- sapply(fit_list, check_model, data_list, just_pvals)
+    } else {
+        ppc <- lapply(fit_list, check_model, data_list, just_pvals)
+    }
+
+    ppc
 
 }
