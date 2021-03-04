@@ -19,13 +19,13 @@ get_checking_parameters <- function() {
 
 #' Generates vector of parameter needed to evaluate models
 #'
-#' @param checking_params logical. should 'X.new' and 'Y.new', the parameters
-#' used in posterior predictive checking, be included?
+#' @param checking_parameters logical. should 'X.new' and 'Y.new', the
+#' parameters used in posterior predictive checking, be included?
 #'
 #' @return character vector of parameter names
 #'
 #' @export
-get_evaluation_parameters <- function(checking_params = FALSE) {
+get_evaluation_parameters <- function(checking_parameters = FALSE) {
 
     params <- c(
         'eta',
@@ -34,7 +34,7 @@ get_evaluation_parameters <- function(checking_params = FALSE) {
         'theta'
     )
 
-    if (checking_params) params <- c(params, get_checking_parameters())
+    if (checking_parameters) params <- c(params, get_checking_parameters())
 
     params
 
