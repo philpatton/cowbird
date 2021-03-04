@@ -12,4 +12,4 @@ get_host_names <- function() c("ADWA", "BWVI", "PROR", "PRVI")
 #'
 #' @return vector. names of the habitats
 #'
-habitat_names <- function() c("Forest", "Shade", 'Sun')
+get_habitat_names <- function() c("Forest", "Shade", 'Sun')
