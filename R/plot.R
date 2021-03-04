@@ -7,35 +7,29 @@
 #' @return data.frame
 make_cooccur_plot_df <- function(model_fit) {
 
-    model_fit <- bundle_mcmc_samples(model_fit)
+    samples <- bundle_mcmc_samples(model_fit)
 
-    average <- sapply(model_fit, function(x) apply(x, 1, mean))
+    sample_summary <- summarize_mcmc_samples(samples)
+
     average <- reshape2::melt(
-        average,
+        sample_summary$average,
         varnames = c('host', 'parameter'),
         value.name = 'mean'
     )
 
-    lower_quantile <- sapply(
-        model_fit,
-        function(x) apply(x, 1, stats::quantile, 0.025)
-    )
     lower_quantile <- reshape2::melt(
-        lower_quantile,
+        sample_summary$lower_quantile,
         varnames = c('host', 'parameter'),
         value.name ='lower_quantile'
     )
 
-    upper_quantile <- sapply(
-        model_fit,
-        function(x) apply(x, 1, stats::quantile, 0.975)
-    )
     upper_quantile <- reshape2::melt(
-        upper_quantile,
+        sample_summary$upper_quantile,
         varnames = c('host', 'parameter'),
         value.name ='upper_quantile'
     )
 
+    # join data.frames
     plot_df <- merge(average, merge(lower_quantile, upper_quantile))
     plot_df <- plot_df[grep('coc', plot_df$parameter), ]
 
@@ -48,8 +42,6 @@ make_cooccur_plot_df <- function(model_fit) {
         'Forest',
         ifelse(habitat_id == 'sha', 'Shade', 'Sun')
     )
-
-    rownames(plot_df) = NULL
 
     plot_df
 
