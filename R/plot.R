@@ -11,26 +11,9 @@ make_cooccur_plot_df <- function(model_fit) {
 
     sample_summary <- summarize_mcmc_samples(samples)
 
-    average <- reshape2::melt(
-        sample_summary$average,
-        varnames = c('host', 'parameter'),
-        value.name = 'mean'
-    )
+    plot_df <- reshape2::melt(sample_summary)
+    names(plot_df) <- c('host', 'measure', 'value', 'parameter')
 
-    lower_quantile <- reshape2::melt(
-        sample_summary$lower_quantile,
-        varnames = c('host', 'parameter'),
-        value.name ='lower_quantile'
-    )
-
-    upper_quantile <- reshape2::melt(
-        sample_summary$upper_quantile,
-        varnames = c('host', 'parameter'),
-        value.name ='upper_quantile'
-    )
-
-    # join data.frames
-    plot_df <- merge(average, merge(lower_quantile, upper_quantile))
     plot_df <- plot_df[grep('coc', plot_df$parameter), ]
 
     host_names <- get_host_names()
@@ -42,6 +25,8 @@ make_cooccur_plot_df <- function(model_fit) {
         'Forest',
         ifelse(habitat_id == 'sha', 'Shade', 'Sun')
     )
+
+    plot_df <- reshape2::dcast(plot_df, host + parameter + habitat ~ measure)
 
     plot_df
 
@@ -61,12 +46,12 @@ plot_cooccur_probs <- function(model_fit) {
 
     p <- ggplot2::ggplot(
             cooccur_plot_df,
-            ggplot2::aes(x = habitat, y = mean)
+            ggplot2::aes(x = habitat, y = avg)
         ) +
         ggplot2::geom_point() +
         ggplot2::facet_grid(host ~ .) +
         ggplot2::geom_errorbar(
-            ggplot2::aes(ymin = lower_quantile, ymax = upper_quantile),
+            ggplot2::aes(ymin = lower, ymax = upper),
             width = 0
         ) +
         ggplot2::ylab("Co-occurrence Probability") +
