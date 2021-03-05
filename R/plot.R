@@ -347,9 +347,9 @@ plot_ppc <- function(ppc_results, model = c('Model 1', 'Model 2', 'Model 3' )) {
 #' @return gridExtra grob
 plot_all_ppc <- function(ppc_list) {
 
-    p1 <- plot_ppc(ppc_list$model1_ppc, 'Model 1')
-    p2 <- plot_ppc(ppc_list$model2_ppc, 'Model 2')
-    p3 <- plot_ppc(ppc_list$model3_ppc, 'Model 3')
+    p1 <- plot_ppc(ppc_list$fit1, 'Model 1')
+    p2 <- plot_ppc(ppc_list$fit2, 'Model 2')
+    p3 <- plot_ppc(ppc_list$fit3, 'Model 3')
 
     gridExtra::grid.arrange(p1, p2, p3, ncol = 3)
 
