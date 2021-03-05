@@ -126,3 +126,23 @@ get_predicition_parameters <- function() {
     params
 
 }
+
+#' Generates vector of the primary parameters
+#'
+#' Generates a vector of names of parameters, including hyper parameters,
+#' cowbird parameters, prediction parameters, and model evaluation parameters.
+#'
+#' @return character vector of parameter names
+#'
+#' @export
+get_all_parameters <- function() {
+
+    params <- c(
+        get_table3_parameters(),
+        'kappa',
+        get_evaluation_parameters(checking_parameters = TRUE)
+    )
+
+    params
+
+}

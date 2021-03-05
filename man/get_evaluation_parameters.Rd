@@ -4,11 +4,11 @@
 \alias{get_evaluation_parameters}
 \title{Generates vector of parameter needed to evaluate models}
 \usage{
-get_evaluation_parameters(checking_params = FALSE)
+get_evaluation_parameters(checking_parameters = FALSE)
 }
 \arguments{
-\item{checking_params}{logical. should 'X.new' and 'Y.new', the parameters
-used in posterior predictive checking, be included?}
+\item{checking_parameters}{logical. should 'X.new' and 'Y.new', the
+parameters used in posterior predictive checking, be included?}
 }
 \value{
 character vector of parameter names
