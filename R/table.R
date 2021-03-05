@@ -1,3 +1,4 @@
+sum_fun <- function(x) c(mean(x), quantile(x, c(0.025, 0.975)))
 
 #' Get the model type (observation or occurrence) for a parameter
 #'
@@ -82,8 +83,6 @@ summarize_vector_params <- function(vector_samples) {
     names(vector_samples) <- c('covariate', 'iteration', 'value', 'X', 'parameter')
     vector_samples <- vector_samples[, -4]
 
-    sum_fun = function(x) c(mean(x), quantile(x, c(0.025, 0.975)))
-
     vec_df <- stats::aggregate(
         value ~ covariate + parameter,
         vector_samples,
@@ -94,6 +93,22 @@ summarize_vector_params <- function(vector_samples) {
     vec_df
 
 }
+
+summarize_host_effect <- function(he_samples) {
+
+    names(he_samples) <- c('host', 'iteration', 'value', 'parameter')
+
+    he_df <- stats::aggregate(
+        value ~ host + parameter,
+        he_samples,
+        sum_fun
+    )
+    he_df <- do.call(data.frame, he_df)
+
+    he_df
+
+}
+
 
 #' Summarize MCMC samples for matrix parameters
 #'
@@ -108,8 +123,6 @@ summarize_vector_params <- function(vector_samples) {
 summarize_matrix_params <- function(matrix_samples) {
 
     names(matrix_samples) <- c('covariate', 'host', 'value', 'iteration', 'parameter')
-
-    sum_fun <- function(x) c(mean(x), stats::quantile(x, c(0.025, 0.975)))
 
     mat_df <- stats::aggregate(
         value ~ host + covariate + parameter,
@@ -185,12 +198,16 @@ rename_species_mat <- function(mat_sum) {
 
 #' Create a table of parameter estimates
 #'
-#' Creates a table of parameter estimates, e.g., Tables 1-3
+#' Creates a table of parameter estimates, e.g., Tables 1
 #'
 #' @param model_fit output from \code{\link{fit_model}}
 #'
 #' @return data.frame
-make_estimate_table <- function(model_fit) {
+make_table_one <- function(model_fit) {
+
+    parameters <- get_hyper_parameters()
+
+    model_fit <- model_fit[names(model_fit) %in% parameters]
 
     samples <- bundle_mcmc_samples(model_fit)
 
@@ -212,6 +229,7 @@ make_estimate_table <- function(model_fit) {
 
     tab <- rbind(mat_sum, vec_sum)
 
+    # reorder the columns
     cols <- c(
         'species',
         'model',
@@ -223,6 +241,9 @@ make_estimate_table <- function(model_fit) {
         'upper_95'
     )
 
+    tab <- tab[, cols]
+
+    # sort the rows
     is_cow <- tab$species == 'SHCO'
     is_hyper <- tab$species == 'Host Community'
 
@@ -230,55 +251,112 @@ make_estimate_table <- function(model_fit) {
         is_cow, is_hyper, tab$species, tab$model, tab$param, tab$level
     )
 
-    tab[row_order, cols]
+    tab <- tab[row_order, ]
+
+    # round the number columns
+    ids <- tab[1:5]
+    numbers <- signif(tab[6:8], digits = 3)
+
+    cbind(ids, numbers)
 
 }
 
+#' Create a table of parameter estimates
+#'
+#' Creates a table of parameter estimates, e.g., Tables 2
+#'
+#' @param model_fit output from \code{\link{fit_model}}
+#'
+#' @return data.frame
+make_table_two <- function(model_fit) {
 
-write_tables <- function(output){
+    tab <- make_table_one(model_fit)
 
-    # load("mod1_ests.RData")
-    # library(coda)
-    # summary(output)
-    # tab = data.frame(Mean = round(summary(output)$statistics[,1], 2),
-    #                  round(summary(output)$quantiles[,c(1,5)], 2))
-    # colnames(tab)[c(2,3)] = c('lower', 'upper')
-    # xtable(tab)
-    # write.csv("mod3_ests.csv", row.names = F)
+    samples <- bundle_mcmc_samples(model_fit)
 
-    # load("mod2_ests.RData")
-    # summary(output)
-    # tab = data.frame(Mean = round(summary(output)$statistics[,1], 2),
-    #                  round(summary(output)$quantiles[,c(1,5)], 2))
-    # colnames(tab)[c(2,3)] = c('lower', 'upper')
-    # xtable(tab)
-    # write.csv(tab, "mod2_ests.csv", row.names = F)
+    kappa_sum <- sum_fun(samples$kappa_samples)
 
-    # I edited the rownames to be in latex/mathjax format,
-    # then used online latex table converter.
+    kappa_df <- data.frame(
+        species = 'SHCO',
+        model = 'Occurrence',
+        param = '\\kappa',
+        parameter = 'kappa',
+        level = 'Host Richness',
+        mean = kappa_sum[1],
+        lower_95 = kappa_sum[2],
+        upper_95 = kappa_sum[3]
+    )
 
-    # load("mod3_ests.RData")
-    # summary(output)
-    # tab = data.frame(Mean = round(summary(output)$statistics[,1], 2),
-    #                  round(summary(output)$quantiles[,c(1,5)], 2))
-    # colnames(tab)[c(2,3)] = c('lower', 'upper')
-    # xtable(tab)
-    # write.csv(tab, "mod3_ests.csv", row.names = F)
+    tab <- rbind(tab, kappa_df)
 
-    # I edited the rownames to be in latex/mathjax format,
-    # then used online latex table converter.
+    # sort the rows
+    is_cow <- tab$species == 'SHCO'
+    is_hyper <- tab$species == 'Host Community'
 
-    ##
-    ##
-    ## WAIC table
-    ## 02/28/17
-    ##
-    ##
+    row_order <- order(
+        is_cow, is_hyper, tab$species, tab$model, tab$param, tab$level
+    )
 
-    # tab = read.csv(paste0(getwd(), "/tables/", "WAIC.table.csv"))
-    # table = tab[,2:4]
-    # rownames(table) = tab[,1]
-    # library(xtable)
-    # xtable(table)
+    tab <- tab[row_order, ]
+
+    # round the number columns
+    ids <- tab[1:5]
+    numbers <- signif(tab[6:8], digits = 3)
+
+    cbind(ids, numbers)
+
+}
+
+#' Create a table of parameter estimates
+#'
+#' Creates a table of parameter estimates, e.g., Tables 3
+#'
+#' @param model_fit output from \code{\link{fit_model}}
+#'
+#' @return data.frame
+make_table_three <- function(model_fit) {
+
+    parameters <- get_table3_parameters()
+
+    tab <- make_table_one(model_fit)
+
+    host_effects <- c('e', 'rho')
+    is_he <- names(model_fit) %in% host_effects
+
+    he_samples <- bundle_mcmc_samples(model_fit[is_he])
+    tmp <- reshape2::melt(he_samples)
+
+    he_sum <- summarize_host_effect(tmp)
+
+    he_sum$level <- get_host_names()[he_sum$host]
+    he_sum$host <- NULL
+
+    he_sum$parameter <- gsub('_samples', '', he_sum$parameter)
+
+    names(he_sum)[2:4] <- c('mean', 'lower_95', 'upper_95')
+
+    he_sum$param <- ifelse(he_sum$parameter == 'e', '\\epsilon', '\\rho')
+
+    he_sum$species <- 'SHCO'
+
+    he_sum$model <- 'Occurrence'
+
+    tab <- rbind(tab, he_sum)
+
+    # sort the rows
+    is_cow <- tab$species == 'SHCO'
+    is_hyper <- tab$species == 'Host Community'
+
+    row_order <- order(
+        is_cow, is_hyper, tab$species, tab$model, tab$param, tab$level
+    )
+
+    tab <- tab[row_order, ]
+
+    # round the number columns
+    ids <- tab[1:5]
+    numbers <- signif(tab[6:8], digits = 3)
+
+    cbind(ids, numbers)
 
 }
