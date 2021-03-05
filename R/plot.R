@@ -42,6 +42,12 @@ make_cooccur_plot_df <- function(model_fit) {
 #' @return ggplot2 object
 plot_cooccur_probs <- function(model_fit) {
 
+    has_preds <- all(get_predicition_parameters() %in% names(model_fit))
+
+    if (!has_preds) {
+        stop('model_fit must have samples for the prediction parameters')
+    }
+
     cooccur_plot_df <- make_cooccur_plot_df(model_fit)
 
     p <- ggplot2::ggplot(
