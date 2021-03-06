@@ -13,7 +13,8 @@ fit_model(
   n.burn = 10,
   n.iter = 10,
   n.thin = 1,
-  mcmc_params_paper = FALSE
+  mcmc_params_paper = FALSE,
+  fix_seed = FALSE
 )
 }
 \arguments{
@@ -38,6 +39,8 @@ before saving samples}
 
 \item{mcmc_params_paper}{logical. should we fit the model using the MCMC
 parameters described in the paper?}
+
+\item{fix_seed}{logical. should the seed be set for reproducible results?}
 }
 \value{
 list, elements of class \code{rjags::mcarray}
