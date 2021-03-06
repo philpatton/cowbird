@@ -1,11 +1,13 @@
 Package: cowbird
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Recreate analysis in Patton et al (TBD)
 Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
+Author: Philip T Patton
+Maintainer: Philip T Patton <philtpatton@gmail.com>
+Description: Cowbird contains functions and data necessary to recreate the 
+    analysis in Patton et al (TBD), including model fitting, MCMC convergence 
+    testing, model checking and evaluation, tabulating estimates, and plotting
+    predictions.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
@@ -18,7 +20,8 @@ Imports:
     stats,
     ggplot2,
     gridExtra,
-    grDevices
+    grDevices,
+    coda
 RoxygenNote: 7.1.1
 Suggests: 
     testthat (>= 3.0.0),
