@@ -51,9 +51,9 @@ fit_model <- function(model = c('model_1', 'model_2', 'model_3'), data_list,
     if (mcmc_params_paper) {
         n.chains <- 2
         n.adapt <- 40000
-        n.burn <- 40000
-        n.iter <- 10000
-        n.thin <- 1
+        n.burn <- 80000
+        n.iter <- 80000
+        n.thin <- 2
     }
 
     # parameters to monitor
@@ -97,14 +97,15 @@ fit_model <- function(model = c('model_1', 'model_2', 'model_3'), data_list,
 #' TBD).
 #'
 #' @inheritParams fit_model
-#' 
+#'
 #' @return list, elements of class \code{rjags::mcarray}
 #'
 #' @seealso rjags documentation for fitting models with rjags
 #' @export
 fit_all_models <- function(data_list, params_to_monitor = NULL,
                            n.chains = 1, n.adapt = 100, n.burn = 10,
-                           n.iter = 10, n.thin = 1, fix_seed = FALSE) {
+                           n.iter = 10, n.thin = 1,
+                           mcmc_params_paper = FALSE, fix_seed = FALSE) {
 
     if (is.null(params_to_monitor))  params_to_monitor <- get_hyper_parameters()
 
@@ -117,6 +118,7 @@ fit_all_models <- function(data_list, params_to_monitor = NULL,
         n.burn = n.burn,
         n.iter = n.iter,
         n.thin = n.thin,
+        mcmc_params_paper = mcmc_params_paper,
         fix_seed = fix_seed
     )
 
@@ -129,6 +131,7 @@ fit_all_models <- function(data_list, params_to_monitor = NULL,
         n.burn = n.burn,
         n.iter = n.iter,
         n.thin = n.thin,
+        mcmc_params_paper = mcmc_params_paper,
         fix_seed = fix_seed
     )
 
@@ -141,6 +144,7 @@ fit_all_models <- function(data_list, params_to_monitor = NULL,
         n.burn = n.burn,
         n.iter = n.iter,
         n.thin = n.thin,
+        mcmc_params_paper = mcmc_params_paper,
         fix_seed = fix_seed
     )
 
