@@ -21,7 +21,5 @@ eval <- evaluate_all_models(fit_list, data_list)
 
 # Plot models
 
-p1 <- plot_all_ppc(ppc_list)
-
-# Make Table
+p1 <- plot_ppc(ppc_list)
 
