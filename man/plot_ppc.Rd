@@ -2,18 +2,16 @@
 % Please edit documentation in R/plot.R
 \name{plot_ppc}
 \alias{plot_ppc}
-\title{Generate posterior predictive checking plots}
+\title{Generate Figure 2}
 \usage{
-plot_ppc(ppc_results, model = c("Model 1", "Model 2", "Model 3"))
+plot_ppc(ppc_list)
 }
 \arguments{
-\item{ppc_results}{output from \code{\link{check_model}}}
-
-\item{model}{character. specifies which model is being checked.}
+\item{ppc_list}{output from \code{\link{check_all_models}}}
 }
 \value{
-ggplot2 object
+gridExtra grob
 }
 \description{
-Generate subplots used to generate
+Generate plot of used in posterior predictive checking
 }

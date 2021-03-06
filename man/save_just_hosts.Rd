@@ -4,10 +4,10 @@
 \alias{save_just_hosts}
 \title{Save Figure 5}
 \usage{
-save_just_hosts(plot, plot_file)
+save_just_hosts(just_hosts, plot_file)
 }
 \arguments{
-\item{plot}{output from \code{\link{plot_cooccur_probs}}}
+\item{just_hosts}{output from \code{\link{plot_cooccur_probs}}}
 
 \item{plot_file}{character. specifies file to save to.}
 }

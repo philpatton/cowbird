@@ -4,10 +4,10 @@
 \alias{save_sites_with_both}
 \title{Save Figure 4}
 \usage{
-save_sites_with_both(plot, plot_file)
+save_sites_with_both(sites_with_both, plot_file)
 }
 \arguments{
-\item{plot}{output from \code{\link{plot_sites_with_both}}}
+\item{sites_with_both}{output from \code{\link{plot_sites_with_both}}}
 
 \item{plot_file}{character. specifies file to save to.}
 }

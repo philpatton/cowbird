@@ -4,10 +4,10 @@
 \alias{save_ppc}
 \title{Save Figure 2}
 \usage{
-save_ppc(plot, plot_file)
+save_ppc(ppc, plot_file)
 }
 \arguments{
-\item{plot}{output from \code{\link{plot_all_ppc}}}
+\item{ppc}{output from \code{\link{plot_ppc}}}
 
 \item{plot_file}{character. specifies file to save to.}
 }

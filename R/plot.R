@@ -40,6 +40,8 @@ make_cooccur_plot_df <- function(model_fit) {
 #' @param model_fit output from \code{\link{fit_model}}
 #'
 #' @return ggplot2 object
+#'
+#' @export
 plot_cooccur_probs <- function(model_fit) {
 
     has_preds <- all(get_predicition_parameters() %in% names(model_fit))
@@ -83,12 +85,13 @@ plot_cooccur_probs <- function(model_fit) {
 #'
 #' Save the plot to a PDF
 #'
-#' @param plot output from \code{\link{plot_cooccur_probs}}
+#' @param occurrence output from \code{\link{plot_cooccur_probs}}
 #' @param plot_file character. specifies file to save to.
 #'
-save_occurrence_plot <- function(plot, plot_file) {
+#' @export
+save_occurrence <- function(occurrence, plot_file) {
     grDevices::pdf(file = plot_file, width = 2.3, height = 4, pointsize = 9)
-    plot
+    plot(occurrence)
     grDevices::dev.off()
 }
 
@@ -135,6 +138,7 @@ make_sites_with_both_df <- function(model_fit) {
 #' @param model_fit output from \code{\link{fit_model}}
 #'
 #' @return ggplot2 object
+#' @export
 plot_sites_with_both <- function(model_fit) {
 
     sites_with_both <- make_sites_with_both_df(model_fit)
@@ -167,15 +171,17 @@ plot_sites_with_both <- function(model_fit) {
 #'
 #' Save the plot to a PDF
 #'
-#' @param plot output from \code{\link{plot_sites_with_both}}
+#' @param sites_with_both output from \code{\link{plot_sites_with_both}}
 #' @param plot_file character. specifies file to save to.
 #'
-save_sites_with_both <- function(plot, plot_file) {
+#' @export
+save_sites_with_both <- function(sites_with_both, plot_file) {
 
     grDevices::pdf(file = plot_file,
         width = 2.75, height = 2.75, pointsize=9)
-    plot
+    plot(sites_with_both)
     grDevices::dev.off()
+
 }
 
 #' Generate co-occurrence plot data.frame
@@ -221,6 +227,8 @@ make_just_host_df <- function(model_fit) {
 #' @param model_fit output from \code{\link{fit_model}}
 #'
 #' @return ggplot2 object
+#'
+#' @export
 plot_just_hosts <- function(model_fit) {
 
     just_host <- make_just_host_df(model_fit)
@@ -253,14 +261,15 @@ plot_just_hosts <- function(model_fit) {
 #'
 #' Save the plot to a PDF
 #'
-#' @param plot output from \code{\link{plot_cooccur_probs}}
+#' @param just_hosts output from \code{\link{plot_cooccur_probs}}
 #' @param plot_file character. specifies file to save to.
 #'
-save_just_hosts <- function(plot, plot_file) {
+#' @export
+save_just_hosts <- function(just_hosts, plot_file) {
 
     grDevices::pdf(file = plot_file,
         width = 2.75, height = 2.75, pointsize = 9)
-    plot
+    plot(just_hosts)
     grDevices::dev.off()
 
 }
@@ -297,7 +306,10 @@ make_annotation_df <- function(ppc_results) {
 #' @param model character. specifies which model is being checked.
 #'
 #' @return ggplot2 object
-plot_ppc <- function(ppc_results, model = c('Model 1', 'Model 2', 'Model 3' )) {
+#'
+#' @export
+plot_ppc_individual <- function(ppc_results,
+                                model = c('Model 1', 'Model 2', 'Model 3' )) {
 
     preds <- reshape2::melt(
         ppc_results$naive_cooccur_predicted,
@@ -345,11 +357,13 @@ plot_ppc <- function(ppc_results, model = c('Model 1', 'Model 2', 'Model 3' )) {
 #' @param ppc_list output from \code{\link{check_all_models}}
 #'
 #' @return gridExtra grob
-plot_all_ppc <- function(ppc_list) {
+#'
+#' @export
+plot_ppc <- function(ppc_list) {
 
-    p1 <- plot_ppc(ppc_list$fit1, 'Model 1')
-    p2 <- plot_ppc(ppc_list$fit2, 'Model 2')
-    p3 <- plot_ppc(ppc_list$fit3, 'Model 3')
+    p1 <- plot_ppc_individual(ppc_list$fit1, 'Model 1')
+    p2 <- plot_ppc_individual(ppc_list$fit2, 'Model 2')
+    p3 <- plot_ppc_individual(ppc_list$fit3, 'Model 3')
 
     gridExtra::grid.arrange(p1, p2, p3, ncol = 3)
 
@@ -359,13 +373,14 @@ plot_all_ppc <- function(ppc_list) {
 #'
 #' Save the plot to a PDF
 #'
-#' @param plot output from \code{\link{plot_all_ppc}}
+#' @param ppc output from \code{\link{plot_ppc}}
 #' @param plot_file character. specifies file to save to.
 #'
-save_ppc <- function(plot, plot_file){
+#' @export
+save_ppc <- function(ppc, plot_file){
 
     grDevices::pdf(file = plot_file, height = 4, width = 7)
-    plot
+    plot(ppc)
     grDevices::dev.off()
 
 }
