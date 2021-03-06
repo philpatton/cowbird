@@ -48,7 +48,7 @@ There are two ways to fit the models described in the paper: fitting each model 
 Either way, `rjags` needs a character vector of parameters whose MCMC samples you would like returned. `get_evaluation_parameters(checking_params = TRUE)` returns a vector of parameters needed to do posterior predictive checks and calculate WAIC.
 
 ```{r get_parms}
-params <- get_evaluation_parameters(checking_params = TRUE)
+params <- get_evaluation_parameters(checking_parameters = TRUE)
 params
 ```
 
