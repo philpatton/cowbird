@@ -140,7 +140,8 @@ get_all_parameters <- function() {
     params <- c(
         get_table3_parameters(),
         'kappa',
-        get_evaluation_parameters(checking_parameters = TRUE)
+        get_evaluation_parameters(checking_parameters = TRUE),
+        get_predicition_parameters()
     )
 
     params
