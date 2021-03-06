@@ -145,6 +145,8 @@ evaluate_model = function(model_fit, data_list) {
 
     df = data.frame(WAIC = waic, ELPPD = elppd, PDWAIC = pdwaic)
 
+    df <- signif(df, 4)
+    
     df
 
 }
@@ -165,7 +167,10 @@ evaluate_all_models = function(fit_list, data_list) {
 
     waic <- do.call(rbind, waic)
 
-    cbind(model = c('Model 1', 'Model 2', 'Model 3'), waic)
+    waic <- cbind(model = c('Model 1', 'Model 2', 'Model 3'), waic)
+    rownames(waic) <- NULL
+    
+    waic
 
 }
 
