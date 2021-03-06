@@ -2,8 +2,8 @@
 #'
 #' Create a matrix of cowbird detections for the data list
 #'
-#' @param cowbird_data data.frame, from the embedded cowbird_data
-#' dataset
+#' @param cowbird_data data.frame, from \code{\link{data('cowbird_data')}}
+#'
 #'
 #' @return matrix of cowbird detections
 get_y <- function(cowbird_data){
@@ -24,8 +24,8 @@ get_y <- function(cowbird_data){
 #'
 #' Create a matrix of host detections for the data list
 #'
-#' @param cowbird_data data.frame, from the embedded cowbird_data
-#' dataset
+#' @param cowbird_data data.frame, from \code{\link{data('cowbird_data')}}
+#'
 #'
 #' @return matrix of host detections
 get_x <- function(cowbird_data){
@@ -46,8 +46,8 @@ get_x <- function(cowbird_data){
 #'
 #' Create a matrix of matrix of visit covariates for the data list
 #'
-#' @param cowbird_data data.frame, from the embedded cowbird_data
-#' dataset
+#' @param cowbird_data data.frame, from \code{\link{data('cowbird_data')}}
+#'
 #'
 #' @return matrix of visit covariates affecting the hosts
 get_o <- function(cowbird_data){
@@ -83,8 +83,8 @@ get_o <- function(cowbird_data){
 #'
 #' Create a matrix of matrix of site covariates for the data list
 #'
-#' @param cowbird_data data.frame, from the embedded cowbird_data
-#' dataset
+#' @param cowbird_data data.frame, from \code{\link{data('cowbird_data')}}
+#'
 #'
 #' @return matrix of site covariates affecting the hosts
 get_w <- function(cowbird_data){
@@ -106,6 +106,34 @@ get_w <- function(cowbird_data){
     )
 
     W
+
+}
+
+#' Create matrix of site covariates affecting the cowbird
+#'
+#' Create a matrix of matrix of site covariates for the data list
+#'
+#' @param cowbird_data data.frame, from \code{\link{data('cowbird_data')}}
+#'
+#' @return matrix of site covariates affecting the hosts
+get_v <- function(cowbird_data){
+
+    sites <- unique(cowbird_data[c('site_index', 'land_use')])
+
+    is_coffee <- grepl('coffee', sites$land_use)
+    coffee <- ifelse(is_coffee, 1, 0)
+
+    V <- array(dim = c(nrow(sites), 2))
+
+    V[, 1] <- 1
+    V[, 2] <- coffee
+
+    dimnames(V) <- list(
+        site = sites$site_index,
+        variable = c('intercept', 'coffee')
+    )
+
+    V
 
 }
 
