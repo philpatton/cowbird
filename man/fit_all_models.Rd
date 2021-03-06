@@ -12,6 +12,7 @@ fit_all_models(
   n.burn = 10,
   n.iter = 10,
   n.thin = 1,
+  mcmc_params_paper = FALSE,
   fix_seed = FALSE
 )
 }
@@ -32,6 +33,9 @@ before saving samples}
 \item{n.iter}{integer representing the number of MCMC iterations to save}
 
 \item{n.thin}{integer representing the number of MCMC iterations to thin}
+
+\item{mcmc_params_paper}{logical. should we fit the model using the MCMC
+parameters described in the paper?}
 
 \item{fix_seed}{logical. should the seed be set for reproducible results?}
 }
