@@ -1,4 +1,4 @@
-sum_fun <- function(x) c(mean(x), quantile(x, c(0.025, 0.975)))
+sum_fun <- function(x) c(mean(x), stats::quantile(x, c(0.025, 0.975)))
 
 #' Get the model type (observation or occurrence) for a parameter
 #'
@@ -203,6 +203,8 @@ rename_species_mat <- function(mat_sum) {
 #' @param model_fit output from \code{\link{fit_model}}
 #'
 #' @return data.frame
+#' 
+#' @export
 make_table_one <- function(model_fit) {
 
     parameters <- get_hyper_parameters()
@@ -268,6 +270,8 @@ make_table_one <- function(model_fit) {
 #' @param model_fit output from \code{\link{fit_model}}
 #'
 #' @return data.frame
+#' 
+#' @export
 make_table_two <- function(model_fit) {
 
     tab <- make_table_one(model_fit)
@@ -314,6 +318,8 @@ make_table_two <- function(model_fit) {
 #' @param model_fit output from \code{\link{fit_model}}
 #'
 #' @return data.frame
+#' 
+#' @export
 make_table_three <- function(model_fit) {
 
     parameters <- get_table3_parameters()
