@@ -4,11 +4,13 @@
 \alias{initialize_values}
 \title{Initialize values for MCMC}
 \usage{
-initialize_values(data_list)
+initialize_values(data_list, fix_seed = FALSE)
 }
 \arguments{
 \item{data_list}{list made from \code{make_data_list()}, containing detection
 matrices for cowbird and hosts}
+
+\item{fix_seed}{logical. should the seed be set for reproducible results?}
 }
 \value{
 list, suitable for use in \code{rjags::jags.model()}

@@ -11,7 +11,8 @@ fit_all_models(
   n.adapt = 100,
   n.burn = 10,
   n.iter = 10,
-  n.thin = 1
+  n.thin = 1,
+  fix_seed = FALSE
 )
 }
 \arguments{
@@ -31,6 +32,8 @@ before saving samples}
 \item{n.iter}{integer representing the number of MCMC iterations to save}
 
 \item{n.thin}{integer representing the number of MCMC iterations to thin}
+
+\item{fix_seed}{logical. should the seed be set for reproducible results?}
 }
 \value{
 list, elements of class \code{rjags::mcarray}
