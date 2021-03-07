@@ -2,7 +2,7 @@
 % Please edit documentation in R/get_names.R
 \name{get_host_names}
 \alias{get_host_names}
-\title{Get the names of the host species}
+\title{Get the abbreviated names of the host species}
 \usage{
 get_host_names()
 }
@@ -10,5 +10,5 @@ get_host_names()
 vector. names of the host species
 }
 \description{
-Get a vector of names of the host species
+Get a vector of abbreviated names of the host species
 }
