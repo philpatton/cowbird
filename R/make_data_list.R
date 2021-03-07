@@ -154,7 +154,7 @@ make_data_list <- function(cowbird_data) {
     u <- o
 
     w <- get_w(cowbird_data)
-    v <- w
+    v <- get_v(cowbird_data)
 
     # number of site covariates for cowbird and hosts, respectively
     n_w <- dim(w)[2]

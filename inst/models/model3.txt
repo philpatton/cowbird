@@ -102,11 +102,6 @@ model{
 
     # Predictions
 
-    # Probability of occurrence for cowbird by landuse
-    psi.for <- ilogit(a[1])
-    psi.sha <- ilogit(a[1] + a[2])
-    psi.sun <- ilogit(a[1] + a[3])
-
     for (i in 1:n_host){
 
         # Probability of occurrence for host by land use
@@ -114,10 +109,14 @@ model{
         eta.sha[i] <- ilogit(c[i, 1] + c[i, 2])
         eta.sun[i] <- ilogit(c[i, 1] + c[i, 3])
 
-        # Probability of co-occurrence for host/cowbird by land use
-        coc.for[i] <- psi.for * eta.for[i]
-        coc.sha[i] <- psi.sha * eta.sha[i]
-        coc.sun[i] <- psi.sun * eta.sun[i]
+        # Probability of occurrence for cowbird by landuse and host
+        psi.for[i] <- ilogit(a[1] + e[i])
+        psi.cof[i] <- ilogit(a[1] + a[2] + e[i])
+
+        # Probability host-cowbird cooccur by land use
+        coc.for[i] <- psi.for[i] * eta.for[i]
+        coc.sha[i] <- psi.cof[i] * eta.sha[i]
+        coc.sun[i] <- psi.cof[i] * eta.sun[i]
 
     } #i
 
