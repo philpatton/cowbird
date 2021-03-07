@@ -7,8 +7,7 @@
 get_y(cowbird_data)
 }
 \arguments{
-\item{cowbird_data}{data.frame, from the embedded cowbird_data
-dataset}
+\item{cowbird_data}{data.frame, from \code{\link{data('cowbird_data')}}}
 }
 \value{
 matrix of cowbird detections
