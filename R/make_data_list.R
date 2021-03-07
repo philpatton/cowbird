@@ -2,7 +2,7 @@
 #'
 #' Create a matrix of cowbird detections for the data list
 #'
-#' @param cowbird_data data.frame, from \code{\link{data('cowbird_data')}}
+#' @param cowbird_data data.frame, from \code{data('cowbird_data')}
 #'
 #'
 #' @return matrix of cowbird detections
@@ -24,7 +24,7 @@ get_y <- function(cowbird_data){
 #'
 #' Create a matrix of host detections for the data list
 #'
-#' @param cowbird_data data.frame, from \code{\link{data('cowbird_data')}}
+#' @param cowbird_data data.frame, from \code{data('cowbird_data')}
 #'
 #'
 #' @return matrix of host detections
@@ -46,7 +46,7 @@ get_x <- function(cowbird_data){
 #'
 #' Create a matrix of matrix of visit covariates for the data list
 #'
-#' @param cowbird_data data.frame, from \code{\link{data('cowbird_data')}}
+#' @param cowbird_data data.frame, from \code{data('cowbird_data')}
 #'
 #'
 #' @return matrix of visit covariates affecting the hosts
@@ -83,8 +83,7 @@ get_o <- function(cowbird_data){
 #'
 #' Create a matrix of matrix of site covariates for the data list
 #'
-#' @param cowbird_data data.frame, from \code{\link{data('cowbird_data')}}
-#'
+#' @param cowbird_data data.frame, from \code{data('cowbird_data')}
 #'
 #' @return matrix of site covariates affecting the hosts
 get_w <- function(cowbird_data){
@@ -113,7 +112,7 @@ get_w <- function(cowbird_data){
 #'
 #' Create a matrix of matrix of site covariates for the data list
 #'
-#' @param cowbird_data data.frame, from \code{\link{data('cowbird_data')}}
+#' @param cowbird_data data.frame, from \code{data('cowbird_data')}
 #'
 #' @return matrix of site covariates affecting the hosts
 get_v <- function(cowbird_data){

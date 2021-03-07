@@ -4,10 +4,12 @@
 \alias{make_table}
 \title{Make a table}
 \usage{
-make_table(model_fit, params)
+make_table(model_fit, parameters)
 }
 \arguments{
 \item{model_fit}{list. output from \code{\link{fit_model}}}
+
+\item{parameters}{character vector of parameter names to summarize}
 }
 \value{
 data.frame

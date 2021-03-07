@@ -7,7 +7,7 @@
 get_w(cowbird_data)
 }
 \arguments{
-\item{cowbird_data}{data.frame, from \code{\link{data('cowbird_data')}}}
+\item{cowbird_data}{data.frame, from \code{data('cowbird_data')}}
 }
 \value{
 matrix of site covariates affecting the hosts

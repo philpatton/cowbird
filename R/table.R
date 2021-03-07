@@ -50,7 +50,7 @@ get_mcmc_ci <- function(mcmc_summary) {
 #' @return data.frame
 summarize_mcmc <- function(model_fit, parameters) {
 
-    mcmc_fit <- convert_mcmc(model_fit, params)
+    mcmc_fit <- convert_mcmc(model_fit, parameters)
 
     mcmc_summary <- lapply(mcmc_fit, summary)
 
@@ -230,9 +230,9 @@ add_parm <- function(mcmc_summary) {
 #' @inheritParams summarize_mcmc
 #'
 #' @return data.frame
-make_table <- function(model_fit, params) {
+make_table <- function(model_fit, parameters) {
 
-    tab <- summarize_mcmc(model_fit, params)
+    tab <- summarize_mcmc(model_fit, parameters)
 
     tab <- add_model(tab)
 
@@ -242,7 +242,7 @@ make_table <- function(model_fit, params) {
 
     tab <- add_parm(tab)
 
-    df
+    tab
 }
 
 #' Make table 1

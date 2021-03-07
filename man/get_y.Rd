@@ -7,7 +7,7 @@
 get_y(cowbird_data)
 }
 \arguments{
-\item{cowbird_data}{data.frame, from \code{\link{data('cowbird_data')}}}
+\item{cowbird_data}{data.frame, from \code{data('cowbird_data')}}
 }
 \value{
 matrix of cowbird detections
