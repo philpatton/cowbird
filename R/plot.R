@@ -104,9 +104,9 @@ save_occurrence <- function(occurrence, plot_file) {
 #' @return data.frame
 make_sites_with_both_df <- function(model_fit) {
 
-    samples <- bundle_mcmc_samples(model_fit)
+    samples <- model_fit[grep('n_both_', names(model_fit))]
 
-    samples <- samples[grep('n_both_', names(samples))]
+    samples <- bundle_mcmc_samples(samples)
 
     sites_with_both <- reshape2::melt(
         samples,
@@ -119,7 +119,7 @@ make_sites_with_both_df <- function(model_fit) {
 
     sites_with_both$host <- host_names[sites_with_both$host]
 
-    habitat_id <- substr(sites_with_both$parameter, 3, 4)
+    habitat_id <- substr(sites_with_both$parameter, 8, 10)
     sites_with_both$habitat <- ifelse(
         habitat_id == 'for',
         'Forest',
@@ -208,7 +208,7 @@ make_just_host_df <- function(model_fit) {
 
     just_host$host <- host_names[just_host$host]
 
-    habitat_id <- substr(just_host$parameter, 3, 4)
+    habitat_id <- substr(just_host$parameter, 8, 10)
     just_host$habitat <- ifelse(
         habitat_id == 'for',
         'Forest',
@@ -326,26 +326,37 @@ plot_ppc_individual <- function(ppc_results,
             preds,
             ggplot2::aes(x = `Number of Sites`, y = ..density..)
         ) +
-        ggplot2::geom_histogram(fill="white", colour="black", binwidth = 2) +
+        ggplot2::geom_histogram(
+            fill = 'deepskyblue',
+            colour = "white",
+            binwidth = 2
+        ) +
         ggplot2::facet_grid(Host ~ .) +
-        ggplot2::geom_density() +
         ggplot2::ggtitle(model) +
         ggplot2::geom_vline(
             ggplot2::aes(xintercept = observed_value),
             data = annos,
-            col = "red"
+            col = "darkorange"
         ) +
         ggplot2::geom_text(
             ggplot2::aes(
                 x,
                 y,
-                label = paste0("p=", pvals)),
+                label = paste0(pvals)),
             data = annos,
             inherit.aes = F
         ) +
         ggplot2::theme(
+            axis.text.y = ggplot2::element_blank(),
+            axis.ticks.y = ggplot2::element_blank(),
+            axis.title.y = ggplot2::element_blank(),
+            strip.background = ggplot2::element_rect(
+                fill = 'white',
+                colour = 'black'
+            ),
             panel.grid.major = ggplot2::element_blank(),
-            panel.grid.minor = ggplot2::element_blank()
+            panel.grid.minor = ggplot2::element_blank(),
+            panel.background = ggplot2::element_blank()
         )
 
 }

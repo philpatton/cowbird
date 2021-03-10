@@ -53,9 +53,7 @@ get_hyper_parameters <- function() {
         'mu_d',
         'sd_d',
         'a',
-        'b',
-        'c',
-        'd'
+        'b'
     )
 
     params
@@ -69,7 +67,11 @@ get_hyper_parameters <- function() {
 #' @export
 get_table1_parameters <- function() {
 
-    params <- get_hyper_parameters()
+    params <- c(
+        get_hyper_parameters(),
+        'c',
+        'd'
+    )
 
     params
 
@@ -82,7 +84,7 @@ get_table1_parameters <- function() {
 #' @export
 get_table2_parameters <- function() {
 
-    params <- c(get_hyper_parameters(), 'kappa')
+    params <- c(get_table1_parameters(), 'kappa')
 
     params
 
@@ -95,7 +97,7 @@ get_table2_parameters <- function() {
 #' @export
 get_table3_parameters <- function() {
 
-    params <- c(get_hyper_parameters(), 'e', 'rho')
+    params <- c(get_table1_parameters(), 'e', 'rho')
 
     params
 

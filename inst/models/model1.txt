@@ -7,12 +7,12 @@ model{
 
         # covariate effects on occurrence, and intercept
         for(j in 1:n_w){
-            c[j,i] ~ dnorm(mu_c[j], prec_c[j])
+            c[i,j] ~ dnorm(mu_c[j], prec_c[j])
         } #j
 
         # covariate effects on detection, and intercept
         for(j in 1:n_o){
-            d[j,i] ~ dnorm(mu_d[j], prec_d[j])
+            d[i,j] ~ dnorm(mu_d[j], prec_d[j])
         } #j
 
     } #i
@@ -52,13 +52,13 @@ model{
 
             # Host Community
             # Occupancy
-            logit(eta[i, j]) <- inprod( W[i, ], c[, j])
+            logit(eta[i, j]) <- inprod( t(W[i, ]), c[j, ])
             tau[i, j] ~ dbern(eta[i, j])
 
             # Detection
             for(k in 1:n_visit){
 
-                logit(zeta[i, j, k]) <- inprod(O[, i, k], d[, j])
+                logit(zeta[i, j, k]) <- inprod(t(O[, i, k]), d[j, ])
                 X[i, j, k] ~ dbern(tau[i, j] * zeta[i, j, k])
 
                 X.new[i, j, k] ~ dbern(tau[i, j] * zeta[i, j, k])
@@ -86,20 +86,19 @@ model{
     # Predictions
     # Probability of occurrence for cowbird by landuse
     psi.for <- ilogit(a[1])
-    psi.sha <- ilogit(a[1] + a[2])
-    psi.sun <- ilogit(a[1] + a[3])
+    psi.cof <- ilogit(a[1] + a[2])
 
     for (i in 1:n_host){
 
         # Probability of occurrence for host by land use
-        eta.for[i] <- ilogit(c[1, i])
-        eta.sha[i] <- ilogit(c[1, i] + c[2, i])
-        eta.sun[i] <- ilogit(c[1, i] + c[3, i])
+        eta.for[i] <- ilogit(c[i, 1])
+        eta.sha[i] <- ilogit(c[i, 1] + c[i, 2])
+        eta.sun[i] <- ilogit(c[i, 1] + c[i, 3])
 
         # Probability of co-occurrence for host/cowbird by land use
         coc.for[i] <- psi.for * eta.for[i]
-        coc.sha[i] <- psi.sha * eta.sha[i]
-        coc.sun[i] <- psi.sun * eta.sun[i]
+        coc.sha[i] <- psi.cof * eta.sha[i]
+        coc.sun[i] <- psi.cof * eta.sun[i]
 
     } #i
 
@@ -107,13 +106,15 @@ model{
     for (j in 1:n_host){
         for(i in 1:n_site){
 
-            # number of sites with both species
-            both_for[i,j] = z[i] * tau[i,j] * W[i, 1]
+            forest[i,j] <- (W[i, 1] - W[i, 2] - W[i, 3])
+
+            # number of sites with both species by land use
+            both_for[i,j] = z[i] * tau[i,j] * forest[i,j]
             both_sha[i,j] = z[i] * tau[i,j] * W[i, 2]
             both_sun[i,j] = z[i] * tau[i,j] * W[i, 3]
 
-            # number of sites with just host
-            only_host_for[i,j] = (1 - z[i]) * tau[i,j] * W[i, 1]
+            # number of sites with just host by land use
+            only_host_for[i,j] = (1 - z[i]) * tau[i,j] * forest[i,j]
             only_host_sha[i,j] = (1 - z[i]) * tau[i,j] * W[i, 2]
             only_host_sun[i,j] = (1 - z[i]) * tau[i,j] * W[i, 3]
 

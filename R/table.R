@@ -1,368 +1,358 @@
-sum_fun <- function(x) c(mean(x), stats::quantile(x, c(0.025, 0.975)))
+#' Extract the mean from the MCMC summary
+#'
+#' Extract the mean from the MCMC summary
+#'
+#' @param mcmc_summary list. output from \code{\link{summarize_mcmc}}
+#'
+#' @return data.frame
+get_mcmc_mean <- function(mcmc_summary) {
 
-#' Get the model type (observation or occurrence) for a parameter
-#'
-#' This function is used to build the estimate table.
-#'
-#' @param sample_summary data.frame. summary of mcmc samples.
-#'
-#' @return character vector.
-get_mod <- function(sample_summary) {
+    means <- lapply(mcmc_summary, function(x) `$`(x, 'statistics'))
 
-    num_covs <- tapply(
-        sample_summary$covariate,
-        sample_summary$parameter,
-        max
+    means <- do.call(rbind, means)[, 'Mean']
+
+    means <- unlist(means)
+
+    params <- sub('.*\\.', '', names(means))
+
+    data.frame(parameter = params, mean = means)
+
+}
+
+#' Extract the credible interval from the MCMC summary
+#'
+#' Extract the credible interval from the MCMC summary
+#'
+#' @param mcmc_summary list. output from \code{\link{summarize_mcmc}}
+#'
+#' @return data.frame
+get_mcmc_ci <- function(mcmc_summary) {
+
+    quants <- lapply(mcmc_summary, function(x) `$`(x, 'quantile'))
+
+    quants <- do.call(rbind, quants)
+
+    ci <- quants[, c('2.5%', '97.5%')]
+
+    param <- rownames(ci)
+
+    data.frame(parameter = param, lower = ci[, 1], upper = ci[, 2])
+
+}
+
+#' Summarize the MCMC output
+#'
+#' Use coda summary.mcmc method to summarize MCMC output
+#'
+#' @param model_fit list. output from \code{\link{fit_model}}
+#' @param parameters character vector of parameter names to summarize
+#'
+#' @return data.frame
+summarize_mcmc <- function(model_fit, parameters) {
+
+    mcmc_fit <- convert_mcmc(model_fit, parameters)
+
+    mcmc_summary <- lapply(mcmc_fit, summary)
+
+    average <- get_mcmc_mean(mcmc_summary)
+
+    ci <- get_mcmc_ci(mcmc_summary)
+
+    df <- merge(average, ci)
+
+    nums <- round(df[, 2:4], 2)
+
+    data.frame(parameter = df$parameter, nums)
+
+}
+
+#' Add the model type (observation, detection) to the table
+#'
+#' Add the model type (observation, detection) to the table
+#'
+#' @param mcmc_summary data.frame output from \code{\link{summarize_mcmc}}
+#'
+#' @return data.frame
+add_model <- function(mcmc_summary) {
+
+    site_params <- c(
+        'a\\[',
+        'c\\[',
+        'kappa',
+        'rho\\[',
+        'e\\[',
+        'mu_c',
+        'sd_c'
     )
-    mod <- ifelse(num_covs == 2, 'Observation', 'Occurrence')
 
-    mod[sample_summary$parameter]
+    site_exp <- paste(site_params, collapse = '|')
+
+    visit_params <- c('b\\[', 'd\\[', 'mu_d', 'sd_d')
+
+    visit_exp <- paste(visit_params, collapse = '|')
+
+    mcmc_summary$model <- NA
+
+    is_site_param <- grepl(site_exp, mcmc_summary$parameter)
+    is_visit_param <- grepl(visit_exp, mcmc_summary$parameter)
+
+    mcmc_summary$model[is_site_param] <- 'Occurrence'
+    mcmc_summary$model[is_visit_param] <- 'Detection'
+
+    mcmc_summary
 
 }
 
+#' Add the species to the table
+#'
+#' Add the species to the table
+#'
+#' @param mcmc_summary data.frame output from \code{\link{summarize_mcmc}}
+#'
+#' @return data.frame
+add_species <- function(mcmc_summary) {
 
-#' Get the covariate level (e.g., interecept or observer B.) for a parameter
-#'
-#' This function is used to build the estimate table.
-#'
-#' @param sample_summary data.frame. summary of mcmc samples.
-#'
-#' @return character vector.
-get_cov <- function(sample_summary) {
+    cow_params <- c('a', 'b', 'rho', 'e', 'kappa')
+    cow_exp <- paste(cow_params, collapse = '|')
 
-    cov <- ifelse(
-        sample_summary$model == 'Occurrence',
-        get_habitat_names()[sample_summary$covariate],
-        c('Intercept', 'Obs.B')[sample_summary$covariate]
+    mcmc_summary$species <- NA
+
+    is_cow <- grepl(cow_exp, mcmc_summary$parameter)
+    mcmc_summary$species[is_cow] <- 'SHCO'
+
+    hyper_params <- c('mu_c', 'mu_d', 'sd_c', 'sd_d')
+    hyper_exp <- paste(hyper_params, collapse = '|')
+
+    is_hyper <- grepl(hyper_exp, mcmc_summary$parameter)
+    mcmc_summary$species[is_hyper] <- 'Host Community'
+
+    # extract first dim, the host id, from matrix params
+    # e.g, extrct 4 from c[4,3]
+    host_id_exp <-  '\\d,'
+    host_id <- regmatches(
+        mcmc_summary$parameter,
+        regexpr(host_id_exp, mcmc_summary$parameter)
     )
 
-    cov[cov == 'Forest'] <- 'Intercept'
+    host_id <- as.integer(gsub(',', '', host_id))
 
-    cov
+    host <- get_host_names()[host_id]
 
-}
+    is_host <- grepl(host_id_exp, mcmc_summary$parameter)
+    mcmc_summary$species[is_host] <- host
 
-
-#' Get the full parameter name
-#'
-#' This function is used to build the estimate table.
-#'
-#' @param sample_summary data.frame. summary of mcmc samples.
-#'
-#' @return character vector.
-get_parm <- function(sample_summary) {
-
-    parm <- gsub('_samples', '', sample_summary$parameter)
-
-    parm[parm == 'a'] <- '\\alpha'
-    parm[parm == 'b'] <- '\\beta'
-    parm[parm == 'c'] <- '\\gamma'
-    parm[parm == 'd'] <- '\\delta'
-    parm[parm == 'mu_c'] <- '\\mu_{\\gamma}'
-    parm[parm == 'mu_d'] <- '\\mu_{\\delta}'
-    parm[parm == 'sd_c'] <- '\\sigma_{\\gamma}'
-    parm[parm == 'sd_d'] <- '\\sigma_{\\delta}'
-
-    parm
+    mcmc_summary
 
 }
 
-
-#' Summarize MCMC samples for vector parameters
+#' Add the covariate level (e.g., habitat:forest) to the table
 #'
-#' The JAGS code contains parameters that are either vectors (e.g., alpha) or
-#' matrices (e.g., gamma). The latter describe the individual covariate effects
-#' for the hosts. The former can be covariate effects from the cowbird model,
-#' or the hyper parameters for the host model.
+#' Add the covariate level to the table
 #'
-#' @param vector_samples MCMC samples for the vector parameters
+#' @param mcmc_summary data.frame output from \code{\link{summarize_mcmc}}
 #'
 #' @return data.frame
-summarize_vector_params <- function(vector_samples) {
+add_covariate <- function(mcmc_summary) {
 
-    names(vector_samples) <- c('covariate', 'iteration', 'value', 'X', 'parameter')
-    vector_samples <- vector_samples[, -4]
+    mcmc_summary$covariate <- NA
 
-    vec_df <- stats::aggregate(
-        value ~ covariate + parameter,
-        vector_samples,
-        sum_fun
+    # second digit indicates the covariate for each parameter
+    cov_id_exp <-  ',\\d|\\[\\d\\]'
+    cov_id <- regmatches(
+        mcmc_summary$parameter,
+        regexpr(cov_id_exp, mcmc_summary$parameter)
     )
-    vec_df <- do.call(data.frame, vec_df)
 
-    vec_df
+    cov_id <- as.integer(gsub(',|\\[|\\]', '', cov_id))
 
-}
+    habitat <- get_habitat_names()
+    observer <- c('Intercept', 'Observer B')
 
-summarize_host_effect <- function(he_samples) {
-
-    names(he_samples) <- c('host', 'iteration', 'value', 'parameter')
-
-    he_df <- stats::aggregate(
-        value ~ host + parameter,
-        he_samples,
-        sum_fun
+    ifelse(
+        mcmc_summary$model == 'Detection',
+        observer[cov_id],
+        habitat[cov_id]
     )
-    he_df <- do.call(data.frame, he_df)
 
-    he_df
-
-}
-
-
-#' Summarize MCMC samples for matrix parameters
-#'
-#' The JAGS code contains parameters that are either vectors (e.g., alpha) or
-#' matrices (e.g., gamma). The latter describe the individual covariate effects
-#' for the hosts. The former can be covariate effects from the cowbird model,
-#' or the hyper parameters for the host model.
-#'
-#' @param matrix_samples MCMC samples for the matrix parameters
-#'
-#' @return data.frame
-summarize_matrix_params <- function(matrix_samples) {
-
-    names(matrix_samples) <- c('covariate', 'host', 'value', 'iteration', 'parameter')
-
-    mat_df <- stats::aggregate(
-        value ~ host + covariate + parameter,
-        matrix_samples,
-        sum_fun
+    mcmc_summary$covariate <- ifelse(
+        mcmc_summary$model == 'Detection',
+        observer[cov_id],
+        habitat[cov_id]
     )
-    mat_df <- do.call(data.frame, mat_df)
 
-    mat_df
+    mcmc_summary$covariate[mcmc_summary$covariate == 'Forest'] <- 'Intercept'
 
-}
+    mcmc_summary$covariate[mcmc_summary$parameter == 'a[2]'] <- 'Coffee'
 
-#' Make MCMC output intelligible
-#'
-#' The JAGS output is unintelligible without referencing the JAGS model .txt
-#' file. This will make the output more intelligible
-#'
-#' @param sample_sum data.frame containing summary of MCMC output
-#'
-#' @return data.frame
-beautify_df <- function(sample_sum) {
+    mcmc_summary$covariate[mcmc_summary$parameter == 'kappa'] <- 'Host Richness'
 
-    sample_sum$parameter <- gsub('_samples', '', sample_sum$parameter)
+    is_host_cov <- grepl('rho|e', mcmc_summary$parameter)
 
-    sample_sum$model <- get_mod(sample_sum)
+    host_id <- cov_id[is_host_cov]
 
-    sample_sum$level <- get_cov(sample_sum)
+    host <- get_host_names()
 
-    sample_sum$param <- get_parm(sample_sum)
+    mcmc_summary$covariate[is_host_cov] <- host[host_id]
 
-    names(sample_sum)[3:5] <- c('mean', 'lower_95', 'upper_95')
-
-    sample_sum
+    mcmc_summary
 
 }
 
-#' Convert the numerical species column to words
+#' Add a latex style parameter name to the table
 #'
-#' This makes the MCMC output more intelligible
+#' Add a latex style parameter name to the table
 #'
-#' @param vec_sum data.frame containing summaries of the vector parameters
+#' @param mcmc_summary data.frame output from \code{\link{summarize_mcmc}}
 #'
 #' @return data.frame
-rename_species_vec <- function(vec_sum) {
+add_parm <- function(mcmc_summary) {
 
-    vec_sum$species <- NA
+    parm <- mcmc_summary$parameter
 
-    vec_sum$species[grepl('a_', vec_sum$parameter)] <- 'SHCO'
-    vec_sum$species[grepl('b_', vec_sum$parameter)] <- 'SHCO'
+    parm[grepl('a\\[', parm)] <- '$\\alpha$'
+    parm[grepl('b\\[', parm)] <- '$\\beta$'
+    parm[grepl('c\\[\\d,\\d\\]', parm)] <- '$\\gamma$'
+    parm[grepl('d\\[\\d,\\d\\]', parm)] <- '$\\delta$'
+    parm[grepl('e\\[', parm)] <- '$\\epsilon$'
+    parm[grepl('rho\\[', parm)] <- '$\\rho$'
+    parm[parm == 'kappa'] <- '$\\kappa$'
+    parm[grepl('mu_c\\[', parm)] <- '$\\mu_{\\gamma}$'
+    parm[grepl('mu_d\\[', parm)] <- '$\\mu_{\\delta}$'
+    parm[grepl('sd_c\\[', parm)] <- '$\\sigma_{\\gamma}$'
+    parm[grepl('sd_d\\[', parm)] <- '$\\sigma_{\\delta}$'
 
-    vec_sum$species[grepl('mu', vec_sum$parameter)] <- 'Host Community'
-    vec_sum$species[grepl('sd', vec_sum$parameter)] <- 'Host Community'
+    mcmc_summary$parm <- parm
 
-    vec_sum
+    mcmc_summary
 
 }
 
-#' Convert the numerical species column to words
-#'
-#' This makes the MCMC output more intelligible
-#'
-#' @param mat_sum data.frame containing summaries of the matrix parameters
-#'
-#' @return data.frame
-rename_species_mat <- function(mat_sum) {
+order_row <- function(tab) {
 
-    mat_sum$species <- get_host_names()[mat_sum$host]
-    mat_sum$host <- NULL
+    is_host_param <- tab$species != 'SHCO'
 
-    mat_sum
+    is_hyper <- tab$species != 'Host Community'
+
+    ord <- order(tab$model, is_host_param, is_hyper, tab$species)
+
+    tab[ord, ]
 
 }
 
-#' Create a table of parameter estimates
+rename_col <- function(tab) {
+
+    names(tab) <- c(
+        'Param',
+        'Mean',
+        '2.5%',
+        '97.5%',
+        'Model',
+        'Species',
+        'Level',
+        'Parameter'
+    )
+
+    tab
+
+}
+
+order_col <- function(tab) {
+
+    col_order <- c(
+        'Model',
+        'Parameter',
+        'Species',
+        'Level',
+        'Mean',
+        '2.5%',
+        '97.5%'
+    )
+
+    tab[, col_order]
+
+}
+
+
+#' Make a table
 #'
-#' Creates a table of parameter estimates, e.g., Tables 1
+#' Summarize MCMC output and add relevant descriptions to each parameter
 #'
-#' @param model_fit output from \code{\link{fit_model}}
+#' @inheritParams summarize_mcmc
 #'
 #' @return data.frame
-#' 
+make_table <- function(model_fit, parameters) {
+
+    tab <- summarize_mcmc(model_fit, parameters)
+
+    tab <- add_model(tab)
+
+    tab <- add_species(tab)
+
+    tab <- add_covariate(tab)
+
+    tab <- add_parm(tab)
+
+    tab <- order_row(tab)
+
+    tab <- rename_col(tab)
+
+    tab <- order_col(tab)
+
+    tab
+
+}
+
+#' Make table 1
+#'
+#' Make table 1
+#'
+#' @param model_fit list. output from \code{\link{fit_model}}
+#'
+#' @return data.frame
 #' @export
 make_table_one <- function(model_fit) {
 
-    parameters <- get_hyper_parameters()
+    params <- get_table1_parameters()
 
-    model_fit <- model_fit[names(model_fit) %in% parameters]
+    tab <- make_table(model_fit, params)
 
-    samples <- bundle_mcmc_samples(model_fit)
-
-    tmp <- reshape2::melt(samples)
-
-    is_mat_parm <- tmp$L1 %in% c('c_samples', 'd_samples')
-
-    mat_parms <- tmp[is_mat_parm, ]
-    vec_parms <- tmp[!is_mat_parm, ]
-
-    mat_sum <- summarize_matrix_params(mat_parms)
-    vec_sum <- summarize_vector_params(vec_parms)
-
-    mat_sum <- rename_species_mat(mat_sum)
-    vec_sum <- rename_species_vec(vec_sum)
-
-    mat_sum <- beautify_df(mat_sum)
-    vec_sum <- beautify_df(vec_sum)
-
-    tab <- rbind(mat_sum, vec_sum)
-
-    # reorder the columns
-    cols <- c(
-        'species',
-        'model',
-        'param',
-        'parameter',
-        'level',
-        'mean',
-        'lower_95',
-        'upper_95'
-    )
-
-    tab <- tab[, cols]
-
-    # sort the rows
-    is_cow <- tab$species == 'SHCO'
-    is_hyper <- tab$species == 'Host Community'
-
-    row_order <- order(
-        is_cow, is_hyper, tab$species, tab$model, tab$param, tab$level
-    )
-
-    tab <- tab[row_order, ]
-
-    # round the number columns
-    ids <- tab[1:5]
-    numbers <- signif(tab[6:8], digits = 3)
-
-    cbind(ids, numbers)
+    tab
 
 }
 
-#' Create a table of parameter estimates
+#' Make table 2
 #'
-#' Creates a table of parameter estimates, e.g., Tables 2
+#' Make table 2
 #'
-#' @param model_fit output from \code{\link{fit_model}}
+#' @param model_fit list. output from \code{\link{fit_model}}
 #'
 #' @return data.frame
-#' 
+#'
 #' @export
 make_table_two <- function(model_fit) {
 
-    tab <- make_table_one(model_fit)
+    params <- get_table2_parameters()
 
-    samples <- bundle_mcmc_samples(model_fit)
+    tab <- make_table(model_fit, params)
 
-    kappa_sum <- sum_fun(samples$kappa_samples)
-
-    kappa_df <- data.frame(
-        species = 'SHCO',
-        model = 'Occurrence',
-        param = '\\kappa',
-        parameter = 'kappa',
-        level = 'Host Richness',
-        mean = kappa_sum[1],
-        lower_95 = kappa_sum[2],
-        upper_95 = kappa_sum[3]
-    )
-
-    tab <- rbind(tab, kappa_df)
-
-    # sort the rows
-    is_cow <- tab$species == 'SHCO'
-    is_hyper <- tab$species == 'Host Community'
-
-    row_order <- order(
-        is_cow, is_hyper, tab$species, tab$model, tab$param, tab$level
-    )
-
-    tab <- tab[row_order, ]
-
-    # round the number columns
-    ids <- tab[1:5]
-    numbers <- signif(tab[6:8], digits = 3)
-
-    cbind(ids, numbers)
+    tab
 
 }
 
-#' Create a table of parameter estimates
+#' Make table 3
 #'
-#' Creates a table of parameter estimates, e.g., Tables 3
+#' Make table 3
 #'
-#' @param model_fit output from \code{\link{fit_model}}
+#' @param model_fit list. output from \code{\link{fit_model}}
 #'
 #' @return data.frame
-#' 
 #' @export
 make_table_three <- function(model_fit) {
 
-    parameters <- get_table3_parameters()
+    params <- get_table3_parameters()
 
-    tab <- make_table_one(model_fit)
+    tab <- make_table(model_fit, params)
 
-    host_effects <- c('e', 'rho')
-    is_he <- names(model_fit) %in% host_effects
-
-    he_samples <- bundle_mcmc_samples(model_fit[is_he])
-    tmp <- reshape2::melt(he_samples)
-
-    he_sum <- summarize_host_effect(tmp)
-
-    he_sum$level <- get_host_names()[he_sum$host]
-    he_sum$host <- NULL
-
-    he_sum$parameter <- gsub('_samples', '', he_sum$parameter)
-
-    names(he_sum)[2:4] <- c('mean', 'lower_95', 'upper_95')
-
-    he_sum$param <- ifelse(he_sum$parameter == 'e', '\\epsilon', '\\rho')
-
-    he_sum$species <- 'SHCO'
-
-    he_sum$model <- 'Occurrence'
-
-    tab <- rbind(tab, he_sum)
-
-    # sort the rows
-    is_cow <- tab$species == 'SHCO'
-    is_hyper <- tab$species == 'Host Community'
-
-    row_order <- order(
-        is_cow, is_hyper, tab$species, tab$model, tab$param, tab$level
-    )
-
-    tab <- tab[row_order, ]
-
-    # round the number columns
-    ids <- tab[1:5]
-    numbers <- signif(tab[6:8], digits = 3)
-
-    cbind(ids, numbers)
+    tab
 
 }

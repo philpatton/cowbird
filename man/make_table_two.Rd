@@ -2,16 +2,16 @@
 % Please edit documentation in R/table.R
 \name{make_table_two}
 \alias{make_table_two}
-\title{Create a table of parameter estimates}
+\title{Make table 2}
 \usage{
 make_table_two(model_fit)
 }
 \arguments{
-\item{model_fit}{output from \code{\link{fit_model}}}
+\item{model_fit}{list. output from \code{\link{fit_model}}}
 }
 \value{
 data.frame
 }
 \description{
-Creates a table of parameter estimates, e.g., Tables 2
+Make table 2
 }
