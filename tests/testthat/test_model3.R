@@ -29,7 +29,7 @@ eval <- evaluate_model(model_fit, data_list)
 
 p2 <- plot_sites_with_both(model_fit)
 
-p3 <- plot_just_hosts(model_fit)
+p3 <- plot_just_host(model_fit)
 
 # Make Table
 

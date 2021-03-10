@@ -5,7 +5,9 @@
 #' @param model_fit output from \code{\link{fit_model}}
 #'
 #' @return data.frame
-make_cooccur_plot_df <- function(model_fit) {
+#' 
+#' @export
+cooccur_probs <- function(model_fit) {
 
     samples <- bundle_mcmc_samples(model_fit)
 
@@ -50,10 +52,10 @@ plot_cooccur_probs <- function(model_fit) {
         stop('model_fit must have samples for the prediction parameters')
     }
 
-    cooccur_plot_df <- make_cooccur_plot_df(model_fit)
+    plot_df <- cooccur_probs(model_fit)
 
     p <- ggplot2::ggplot(
-            cooccur_plot_df,
+            plot_df,
             ggplot2::aes(x = habitat, y = avg)
         ) +
         ggplot2::geom_point() +
@@ -100,9 +102,11 @@ save_occurrence <- function(occurrence, plot_file) {
 #' Generate the data.frame used in the co-occurrence plot
 #'
 #' @param model_fit output from \code{\link{fit_model}}
-#'
+#' 
+#' @export
+#' 
 #' @return data.frame
-make_sites_with_both_df <- function(model_fit) {
+sites_with_both <- function(model_fit) {
 
     samples <- model_fit[grep('n_both_', names(model_fit))]
 
@@ -141,10 +145,10 @@ make_sites_with_both_df <- function(model_fit) {
 #' @export
 plot_sites_with_both <- function(model_fit) {
 
-    sites_with_both <- make_sites_with_both_df(model_fit)
+    plot_df <- sites_with_both(model_fit)
 
     p <- ggplot2::ggplot(
-            sites_with_both,
+            plot_df,
             ggplot2::aes(x=`Number of Sites`, y = ..density..)
         ) +
         ggplot2::geom_histogram(binwidth = 1) +
@@ -191,7 +195,7 @@ save_sites_with_both <- function(sites_with_both, plot_file) {
 #' @param model_fit output from \code{\link{fit_model}}
 #'
 #' @return data.frame
-make_just_host_df <- function(model_fit) {
+just_host <- function(model_fit) {
 
     samples <- bundle_mcmc_samples(model_fit)
 
@@ -229,12 +233,12 @@ make_just_host_df <- function(model_fit) {
 #' @return ggplot2 object
 #'
 #' @export
-plot_just_hosts <- function(model_fit) {
+plot_just_host <- function(model_fit) {
 
-    just_host <- make_just_host_df(model_fit)
+    plot_df <- just_host(model_fit)
 
     p <- ggplot2::ggplot(
-        just_host,
+        plot_df,
         ggplot2::aes(x=`Number of Sites`, y = ..density..)
     ) +
         ggplot2::geom_histogram(binwidth = 1) +
@@ -261,15 +265,15 @@ plot_just_hosts <- function(model_fit) {
 #'
 #' Save the plot to a PDF
 #'
-#' @param just_hosts output from \code{\link{plot_cooccur_probs}}
+#' @param just_host output from \code{\link{plot_cooccur_probs}}
 #' @param plot_file character. specifies file to save to.
 #'
 #' @export
-save_just_hosts <- function(just_hosts, plot_file) {
+save_just_host <- function(just_host, plot_file) {
 
     grDevices::pdf(file = plot_file,
         width = 2.75, height = 2.75, pointsize = 9)
-    plot(just_hosts)
+    plot(just_host)
     grDevices::dev.off()
 
 }
