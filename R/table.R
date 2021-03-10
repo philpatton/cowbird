@@ -60,7 +60,9 @@ summarize_mcmc <- function(model_fit, parameters) {
 
     df <- merge(average, ci)
 
-    df
+    nums <- round(df[, 2:4], 2)
+
+    data.frame(parameter = df$parameter, nums)
 
 }
 
@@ -182,6 +184,8 @@ add_covariate <- function(mcmc_summary) {
 
     mcmc_summary$covariate[mcmc_summary$parameter == 'a[2]'] <- 'Coffee'
 
+    mcmc_summary$covariate[mcmc_summary$parameter == 'kappa'] <- 'Host Richness'
+
     is_host_cov <- grepl('rho|e', mcmc_summary$parameter)
 
     host_id <- cov_id[is_host_cov]
@@ -205,23 +209,69 @@ add_parm <- function(mcmc_summary) {
 
     parm <- mcmc_summary$parameter
 
-    parm[grepl('a\\[', parm)] <- '\\alpha'
-    parm[grepl('b\\[', parm)] <- '\\beta'
-    parm[grepl('c\\[\\d,\\d\\]', parm)] <- '\\gamma'
-    parm[grepl('d\\[\\d,\\d\\]', parm)] <- '\\delta'
-    parm[grepl('e\\[', parm)] <- '\\epsilon'
-    parm[grepl('rho\\[', parm)] <- '\\rho'
-    parm[parm == 'kappa'] <- '\\kappa'
-    parm[grepl('mu_c\\[', parm)] <- '\\mu_{\\gamma}'
-    parm[grepl('mu_d\\[', parm)] <- '\\mu_{\\delta}'
-    parm[grepl('sd_c\\[', parm)] <- '\\sigma_{\\gamma}'
-    parm[grepl('sd_d\\[', parm)] <- '\\sigma_{\\delta}'
+    parm[grepl('a\\[', parm)] <- '$\\alpha$'
+    parm[grepl('b\\[', parm)] <- '$\\beta$'
+    parm[grepl('c\\[\\d,\\d\\]', parm)] <- '$\\gamma$'
+    parm[grepl('d\\[\\d,\\d\\]', parm)] <- '$\\delta$'
+    parm[grepl('e\\[', parm)] <- '$\\epsilon$'
+    parm[grepl('rho\\[', parm)] <- '$\\rho$'
+    parm[parm == 'kappa'] <- '$\\kappa$'
+    parm[grepl('mu_c\\[', parm)] <- '$\\mu_{\\gamma}$'
+    parm[grepl('mu_d\\[', parm)] <- '$\\mu_{\\delta}$'
+    parm[grepl('sd_c\\[', parm)] <- '$\\sigma_{\\gamma}$'
+    parm[grepl('sd_d\\[', parm)] <- '$\\sigma_{\\delta}$'
 
     mcmc_summary$parm <- parm
 
     mcmc_summary
 
 }
+
+order_row <- function(tab) {
+
+    is_host_param <- tab$species != 'SHCO'
+
+    is_hyper <- tab$species != 'Host Community'
+
+    ord <- order(tab$model, is_host_param, is_hyper, tab$species)
+
+    tab[ord, ]
+
+}
+
+rename_col <- function(tab) {
+
+    names(tab) <- c(
+        'Param',
+        'Mean',
+        '2.5%',
+        '97.5%',
+        'Model',
+        'Species',
+        'Level',
+        'Parameter'
+    )
+
+    tab
+
+}
+
+order_col <- function(tab) {
+
+    col_order <- c(
+        'Model',
+        'Parameter',
+        'Species',
+        'Level',
+        'Mean',
+        '2.5%',
+        '97.5%'
+    )
+
+    tab[, col_order]
+
+}
+
 
 #' Make a table
 #'
@@ -242,7 +292,14 @@ make_table <- function(model_fit, parameters) {
 
     tab <- add_parm(tab)
 
+    tab <- order_row(tab)
+
+    tab <- rename_col(tab)
+
+    tab <- order_col(tab)
+
     tab
+
 }
 
 #' Make table 1

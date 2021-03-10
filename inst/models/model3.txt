@@ -124,13 +124,15 @@ model{
     for (j in 1:n_host){
         for(i in 1:n_site){
 
-            # number of sites with both species
-            both_for[i,j] = z[i] * tau[i,j] * W[i, 1]
+            forest[i,j] <- (W[i, 1] - W[i, 2] - W[i, 3])
+
+            # number of sites with both species by land use
+            both_for[i,j] = z[i] * tau[i,j] * forest[i,j]
             both_sha[i,j] = z[i] * tau[i,j] * W[i, 2]
             both_sun[i,j] = z[i] * tau[i,j] * W[i, 3]
 
-            # number of sites with just host
-            only_host_for[i,j] = (1 - z[i]) * tau[i,j] * W[i, 1]
+            # number of sites with just host by land use
+            only_host_for[i,j] = (1 - z[i]) * tau[i,j] * forest[i,j]
             only_host_sha[i,j] = (1 - z[i]) * tau[i,j] * W[i, 2]
             only_host_sun[i,j] = (1 - z[i]) * tau[i,j] * W[i, 3]
 
