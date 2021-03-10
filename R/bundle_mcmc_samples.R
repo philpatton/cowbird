@@ -29,6 +29,7 @@ select_last <- function(x) {
 #'
 #' @return array
 #'
+#' @export
 bundle_mcmc_samples <- function(model_fit) {
 
     # convert list of mcmc.arrays to list of regular arrays
