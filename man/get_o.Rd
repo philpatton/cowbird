@@ -2,7 +2,7 @@
 % Please edit documentation in R/make_data_list.R
 \name{get_o}
 \alias{get_o}
-\title{Create matrix of visit covariates affecting the hosts}
+\title{Create matrix containing the visit covariates affecting the hosts}
 \usage{
 get_o(cowbird_data)
 }
@@ -10,8 +10,8 @@ get_o(cowbird_data)
 \item{cowbird_data}{data.frame, from \code{data('cowbird_data')}}
 }
 \value{
-matrix of visit covariates affecting the hosts
+matrix containing the visit covariates affecting the hosts
 }
 \description{
-Create a matrix of matrix of visit covariates for the data list
+Create a matrix containing the visit covariates for the data list
 }

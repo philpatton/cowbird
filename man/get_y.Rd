@@ -2,7 +2,7 @@
 % Please edit documentation in R/make_data_list.R
 \name{get_y}
 \alias{get_y}
-\title{Create matrix of cowbird detections}
+\title{Create matrix containing the cowbird detections}
 \usage{
 get_y(cowbird_data)
 }
@@ -10,8 +10,8 @@ get_y(cowbird_data)
 \item{cowbird_data}{data.frame, from \code{data('cowbird_data')}}
 }
 \value{
-matrix of cowbird detections
+matrix containing the cowbird detections
 }
 \description{
-Create a matrix of cowbird detections for the data list
+Create a matrix containing the cowbird detections for the data list
 }

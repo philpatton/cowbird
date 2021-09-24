@@ -2,7 +2,7 @@
 % Please edit documentation in R/make_data_list.R
 \name{get_x}
 \alias{get_x}
-\title{Create matrix of host detections}
+\title{Create matrix containing the host detections}
 \usage{
 get_x(cowbird_data)
 }
@@ -10,8 +10,8 @@ get_x(cowbird_data)
 \item{cowbird_data}{data.frame, from \code{data('cowbird_data')}}
 }
 \value{
-matrix of host detections
+matrix containing the host detections
 }
 \description{
-Create a matrix of host detections for the data list
+Create a matrix containing the host detections for the data list
 }

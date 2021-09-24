@@ -2,7 +2,7 @@
 % Please edit documentation in R/make_data_list.R
 \name{get_v}
 \alias{get_v}
-\title{Create matrix of site covariates affecting the cowbird}
+\title{Create matrix containing the site covariates affecting the cowbird}
 \usage{
 get_v(cowbird_data)
 }
@@ -10,8 +10,8 @@ get_v(cowbird_data)
 \item{cowbird_data}{data.frame, from \code{data('cowbird_data')}}
 }
 \value{
-matrix of site covariates affecting the hosts
+matrix containing the site covariates affecting the hosts
 }
 \description{
-Create a matrix of matrix of site covariates for the data list
+Create a matrix containing the site covariates affecting the cowbird
 }

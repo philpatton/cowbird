@@ -31,6 +31,7 @@ fit_model <- function(model = c('model_1', 'model_2', 'model_3'), data_list,
                       n.adapt = 100, n.burn = 10, n.iter = 10,
                       n.thin = 1, mcmc_params_paper = FALSE, fix_seed = FALSE) {
 
+    # load the models from the model file in the package
     if (model == 'model_1') {
 
         model_file <- system.file("models", "model1.txt", package = "cowbird")
@@ -48,6 +49,7 @@ fit_model <- function(model = c('model_1', 'model_2', 'model_3'), data_list,
         stop("model not found. try 'model_1', 'model_2', or 'model_3'.")
     }
 
+    # MCMC parameters in the paper used in the paper
     if (mcmc_params_paper) {
         n.chains <- 2
         n.adapt <- 40000
@@ -63,7 +65,7 @@ fit_model <- function(model = c('model_1', 'model_2', 'model_3'), data_list,
 
     start_time <- Sys.time()
 
-    # fit model
+    # compile the model
     jags_model <- rjags::jags.model(
         model_file,
         n.adapt = n.adapt,
@@ -72,8 +74,10 @@ fit_model <- function(model = c('model_1', 'model_2', 'model_3'), data_list,
         data = data_list
     )
 
+    # iterate the algorithm n.burn times (samples discarded)
     update(jags_model, n.burn)
 
+    # iterate the model n.iter times (every n.thin sample kept)
     samps <- rjags::jags.samples(
         jags_model,
         thin = n.thin,
@@ -88,66 +92,5 @@ fit_model <- function(model = c('model_1', 'model_2', 'model_3'), data_list,
     message(m)
 
     samps
-
-}
-
-#' Fit every cowbird-host co-occurrence model
-#'
-#' Fit every cowbird-host co-occurrence models described in Patton et al. (Year
-#' TBD).
-#'
-#' @inheritParams fit_model
-#'
-#' @return list, elements of class \code{rjags::mcarray}
-#'
-#' @seealso rjags documentation for fitting models with rjags
-#' @export
-fit_all_models <- function(data_list, params_to_monitor = NULL,
-                           n.chains = 1, n.adapt = 100, n.burn = 10,
-                           n.iter = 10, n.thin = 1,
-                           mcmc_params_paper = FALSE, fix_seed = FALSE) {
-
-    if (is.null(params_to_monitor))  params_to_monitor <- get_hyper_parameters()
-
-    fit1 <- fit_model(
-        'model_1',
-        data_list = data_list,
-        params_to_monitor = params_to_monitor,
-        n.chains = n.chains,
-        n.adapt = n.adapt,
-        n.burn = n.burn,
-        n.iter = n.iter,
-        n.thin = n.thin,
-        mcmc_params_paper = mcmc_params_paper,
-        fix_seed = fix_seed
-    )
-
-    fit2 <- fit_model(
-        'model_2',
-        data_list = data_list,
-        params_to_monitor = params_to_monitor,
-        n.chains = n.chains,
-        n.adapt = n.adapt,
-        n.burn = n.burn,
-        n.iter = n.iter,
-        n.thin = n.thin,
-        mcmc_params_paper = mcmc_params_paper,
-        fix_seed = fix_seed
-    )
-
-    fit3 <- fit_model(
-        'model_3',
-        data_list = data_list,
-        params_to_monitor = params_to_monitor,
-        n.chains = n.chains,
-        n.adapt = n.adapt,
-        n.burn = n.burn,
-        n.iter = n.iter,
-        n.thin = n.thin,
-        mcmc_params_paper = mcmc_params_paper,
-        fix_seed = fix_seed
-    )
-
-    list(fit1 = fit1, fit2 = fit2, fit3 = fit3)
 
 }
