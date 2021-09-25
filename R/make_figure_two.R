@@ -87,7 +87,8 @@ plot_ppc_individual <- function(ppc_results,
 
 #' Generate Figure 2
 #'
-#' Generate plot of used in posterior predictive checking
+#' Make figure two, which shows the results of posterior predictive checking
+#' the three models.
 #'
 #' @param ppc_list output from \code{\link{check_all_models}}
 #'

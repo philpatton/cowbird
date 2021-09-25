@@ -17,7 +17,8 @@ gridExtra grob
 gridExtra grob
 }
 \description{
-Generate plot of used in posterior predictive checking
+Make figure two, which shows the results of posterior predictive checking
+the three models.
 
 Generate plot of used in posterior predictive checking
 }
