@@ -22,7 +22,6 @@ The `fit_model` function takes a vector of parameter names to monitor in the MCM
 `get_all_parameters` produces a vector of all the parameters needed to check convergence and build all of the tables and figures. 
 
 ```
-
 # a vector of parameters to be monitored in the MCMC fitting
 params <- get_all_parameters()
 
@@ -37,7 +36,6 @@ In my prefered workflow, I save the `fit_list` locally and proceed from here to 
 ## Model 1 Diagnostics
 
 ```
-
 # fetch the estimates from model 1
 fit1 <- fit_list$fit1
 
@@ -55,13 +53,11 @@ plot(diag_samples$sd_d, density = F)
 # effective sample size and gelman-rubin statistic
 ess1 <- effective_sample_size(diag_samples)
 gr1 <- gelman_rubin(diag_samples)
-
 ```
 
 ## Model 2 Diagnostics
 
 ```
-
 fit2 <- fit_list$fit2
 
 # also want to check for convergence of host effect on cowbird
@@ -79,7 +75,6 @@ plot(diag_samples$kappa, density = T)
 
 ess2 <- effective_sample_size(diag_samples)
 gr2 <- gelman_rubin(diag_samples)
-
 ```
 
 ## Model 3 Diagnostics
@@ -108,7 +103,6 @@ gr3 <- gelman_rubin(diag_samples)
 # Model checking and predictive performance.
 
 ```
-
 # get the data for posterior checks
 dl <- make_data_list(cowbird_data)
 
@@ -159,5 +153,4 @@ plot(figure_four)
 # figure five
 figure_five <- make_figure_five(fit)
 plot(figure_five)
-
 ```
