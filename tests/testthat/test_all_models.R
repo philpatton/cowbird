@@ -21,5 +21,5 @@ eval <- evaluate_all_models(fit_list, data_list)
 
 # Plot models
 
-p1 <- plot_ppc(ppc_list)
+p1 <- make_figure_two(ppc_list)
 

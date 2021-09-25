@@ -25,11 +25,11 @@ eval <- evaluate_model(model_fit, data_list)
 
 # Plot models
 
-p1 <- plot_cooccur_probs(model_fit)
+p1 <- make_figure_three(model_fit)
 
-p2 <- plot_sites_with_both(model_fit)
+p2 <- make_figure_four(model_fit)
 
-p3 <- plot_just_host(model_fit)
+p3 <- make_figure_five(model_fit)
 
 # Make Table
 
