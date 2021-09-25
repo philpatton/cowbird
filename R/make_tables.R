@@ -50,7 +50,7 @@ get_mcmc_ci <- function(mcmc_summary) {
 #' @return data.frame
 summarize_mcmc <- function(model_fit, parameters) {
 
-    mcmc_fit <- convert_mcmc(model_fit, parameters)
+    mcmc_fit <- extract_coda_samples(model_fit, parameters)
 
     mcmc_summary <- lapply(mcmc_fit, summary)
 
