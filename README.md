@@ -1,12 +1,13 @@
 # cowbird
-Functions to reproduce analysis in Patton et al (TBD)
-
 This package contains the data and functions to recreate the analysis in Patton et al. (TBD).
+
+Here, I present a workflow that roughly approximates our workflow in analyzing these data. The workflow ultimately reproduces the results described in the paper, including the tables and figures. The workflow starts with training the models, checking that the MCMC algorithms converged, posterior predictitve checking, model selection, then finally inference and predicition from the chosen model. 
 
 # Model fitting.
 
+Begin by loading the data from the data from the package then converting it to a list for JAGS.
+
 ```
-# load the cowbird functions
 library(cowbird)
 
 # fetch the cowbird / host community data
@@ -17,9 +18,8 @@ data_list <- make_data_list(cowbird_data)
 
 ```
 
-The `fit_model` function takes a vector of parameter names to monitor in the MCMC as an argument. The `fit_all_models` function is lazy in that it uses the same vector of parameter names for to fit each model (hence, the warnings when using the function with `get_all_parameters`). This is a To-Do item.
-
-`get_all_parameters` produces a vector of all the parameters needed to check convergence and build all of the tables and figures. 
+Then proceed to training the models. Here, we fit all the models at once using `fit_all_models`. (It's possible to fit individual models with `fit_model`. The 
+`mcmc_params_paper` argument tells the function to iterate the MCMC algorithm long enough that we can reasonably check for convergence later. 
 
 ```
 # a vector of parameters to be monitored in the MCMC fitting
@@ -32,6 +32,8 @@ fit_list <- fit_all_models(data_list,  params, mcmc_params_paper = TRUE)
 In my prefered workflow, I save the `fit_list` locally and proceed from here to prevent disaster if my machine crashes. 
 
 # MCMC diagnostics.
+
+In this section, we check to see that the algorithm converged.
 
 ## Model 1 Diagnostics
 
@@ -100,7 +102,9 @@ ess3 <- effective_sample_size(diag_samples)
 gr3 <- gelman_rubin(diag_samples)
 ```
 
-# Model checking and predictive performance.
+# Model checking and selection.
+
+Here, we perform posterior predictive checks then choose a model with WAIC. 
 
 ```
 # get the data for posterior checks
@@ -123,7 +127,9 @@ waic_res <- evaluate_all_models(fit_list, dl)
 waic_res
 ```
 
-# Parameter estimates and predictions.
+# Inference and predictions.
+
+Using the model of best fit, we generate the figures and tables from the paper. 
 
 ```
 # table one
