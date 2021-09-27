@@ -110,7 +110,7 @@ gr3 <- gelman_rubin(samps)
 Here, we perform posterior predictive checks then choose a model with WAIC. Computing both the Bayesian P-values and WAIC takes a while.
 
 ```
-# posterior predictive check of every model 
+# posterior predictive check of every model (slow)
 ppc_res <- check_all_models(fit_list, dl, just_pvals = F)
 
 # table of pvalues
@@ -120,9 +120,10 @@ ppc_table(ppc_res)
 ppc <- make_figure_two(ppc_res)
 plot(ppc)
 
-# Estimate WAIC (this takes a while)
-
+# Estimate WAIC (slow)
 waic_res <- evaluate_all_models(fit_list, dl)
+
+# table four 
 waic_res
 ```
 
