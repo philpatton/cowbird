@@ -19,7 +19,7 @@ data_list <- make_data_list(cowbird_data)
 ```
 
 Then proceed to training the models. Here, we fit all the models at once using `fit_all_models`. (It's possible to fit individual models with `fit_model`.) The 
-`mcmc_params_paper` argument tells the function to iterate the MCMC algorithm long enough that we can reasonably check for convergence later. 
+`mcmc_params_paper` argument tells the function to iterate the MCMC algorithm long enough that we can reasonably check for convergence later.
 
 ```
 # a vector of parameters to be monitored in the MCMC fitting
@@ -41,20 +41,23 @@ In this section, we check to see that the algorithm converged.
 # fetch the estimates from model 1
 fit1 <- fit_list$fit1
 
+# specify subset parameters for roughly diagnosing convergence 
+params <- get_hyper_parameters()
+
 # convert the output to coda class
-diag_samples <- extract_coda_samples(fit1)
+samps <- extract_coda_samples(fit1, params)
 
 # traceplots for high level parameters
-plot(diag_samples$a, density = F)
-plot(diag_samples$b, density = F)
-plot(diag_samples$mu_c, density = F)
-plot(diag_samples$sd_c, density = F)
-plot(diag_samples$mu_d, density = F)
-plot(diag_samples$sd_d, density = F)
+plot(samps$a, density = F)
+plot(samps$b, density = F)
+plot(samps$mu_c, density = F)
+plot(samps$sd_c, density = F)
+plot(samps$mu_d, density = F)
+plot(samps$sd_d, density = F)
 
 # effective sample size and gelman-rubin statistic
-ess1 <- effective_sample_size(diag_samples)
-gr1 <- gelman_rubin(diag_samples)
+ess1 <- effective_sample_size(samps)
+gr1 <- gelman_rubin(samps)
 ```
 
 ## Model 2 Diagnostics
@@ -65,18 +68,18 @@ fit2 <- fit_list$fit2
 # also want to check for convergence of host effect on cowbird
 params <- c(get_hyper_parameters(), 'kappa')
 
-diag_samples <- extract_coda_samples(fit2, params)
+samps <- extract_coda_samples(fit2, params)
 
-plot(diag_samples$a, density = F)
-plot(diag_samples$b, density = F)
-plot(diag_samples$mu_c, density = F)
-plot(diag_samples$sd_c, density = F)
-plot(diag_samples$mu_d, density = F)
-plot(diag_samples$sd_d, density = F)
-plot(diag_samples$kappa, density = T)
+plot(samps$a, density = F)
+plot(samps$b, density = F)
+plot(samps$mu_c, density = F)
+plot(samps$sd_c, density = F)
+plot(samps$mu_d, density = F)
+plot(samps$sd_d, density = F)
+plot(samps$kappa, density = T)
 
-ess2 <- effective_sample_size(diag_samples)
-gr2 <- gelman_rubin(diag_samples)
+ess2 <- effective_sample_size(samps)
+gr2 <- gelman_rubin(samps)
 ```
 
 ## Model 3 Diagnostics
@@ -87,32 +90,27 @@ fit3 <- fit_list$fit3
 # also want to check for convergence of host effect on cowbird
 params <- c(get_hyper_parameters(), 'e', 'rho')
 
-diag_samples <- extract_coda_samples(fit3, params)
+samps <- extract_coda_samples(fit3, params)
 
-plot(diag_samples$a, density = F)
-plot(diag_samples$b, density = F)
-plot(diag_samples$mu_c, density = F)
-plot(diag_samples$sd_c, density = F)
-plot(diag_samples$mu_d, density = F)
-plot(diag_samples$sd_d, density = F)
-plot(diag_samples$rho, density = F)
-plot(diag_samples$e, density = F)
+plot(samps$a, density = F)
+plot(samps$b, density = F)
+plot(samps$mu_c, density = F)
+plot(samps$sd_c, density = F)
+plot(samps$mu_d, density = F)
+plot(samps$sd_d, density = F)
+plot(samps$rho, density = F)
+plot(samps$e, density = F)
 
-ess3 <- effective_sample_size(diag_samples)
-gr3 <- gelman_rubin(diag_samples)
+ess3 <- effective_sample_size(samps)
+gr3 <- gelman_rubin(samps)
 ```
 
 # Model checking and selection.
 
-Here, we perform posterior predictive checks then choose a model with WAIC. 
+Here, we perform posterior predictive checks then choose a model with WAIC. Computing both the Bayesian P-values and WAIC takes a while.
 
 ```
-# get the data for posterior checks
-dl <- make_data_list(cowbird_data)
-
-# Posterior predictive checks (this takes a while)
-
-# posterior predictive check of all the models 
+# posterior predictive check of every model 
 ppc_res <- check_all_models(fit_list, dl, just_pvals = F)
 
 # table of pvalues
@@ -120,6 +118,7 @@ ppc_table(ppc_res)
 
 # plot the results (figure two) 
 ppc <- make_figure_two(ppc_res)
+plot(ppc)
 
 # Estimate WAIC (this takes a while)
 
