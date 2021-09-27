@@ -18,7 +18,7 @@ data_list <- make_data_list(cowbird_data)
 
 ```
 
-Then proceed to training the models. Here, we fit all the models at once using `fit_all_models`. (It's possible to fit individual models with `fit_model`. The 
+Then proceed to training the models. Here, we fit all the models at once using `fit_all_models`. (It's possible to fit individual models with `fit_model`.) The 
 `mcmc_params_paper` argument tells the function to iterate the MCMC algorithm long enough that we can reasonably check for convergence later. 
 
 ```
