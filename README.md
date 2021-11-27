@@ -33,6 +33,8 @@ fit_list <- fit_all_models(data_list,  params, mcmc_params_paper = TRUE)
 
 In my prefered workflow, I save the `fit_list` locally and proceed from here to prevent disaster if my machine crashes. 
 
+(NOTE: There is a bug here whereby the fit_all_models function causes warnings about not being able to monitor parameters. The rest of the code works fine despite the warning.)
+
 # MCMC diagnostics.
 
 In this section, we check to see that the algorithm converged.
