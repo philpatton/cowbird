@@ -1,7 +1,7 @@
 # cowbird
 This package contains the data and functions to recreate the analysis in "Modeling and estimating co--occurrence between the invasive Shiny Cowbird and its Puerto Rican hosts," by Patton, Pacifici, and Collazo (TBD).
 
-Here, I present a workflow that roughly approximates our workflow in analyzing these data. The workflow ultimately reproduces the results described in the paper, including the tables and figures. The workflow starts with training the models, checking that the MCMC algorithms converged, posterior predictitve checking, model selection, then finally inference and predicition from the chosen model. 
+Here, I present a workflow that roughly approximates our workflow in analyzing these data, ultimately reproducing the results described in the paper, including the tables and figures. The workflow starts with training the models, checking that the MCMC algorithms converged, posterior predictitve checking, model selection, then finally inference and predicition from the chosen model. 
 
 Please note that the package requires the installation of [JAGS](https://mcmc-jags.sourceforge.io/).
 
