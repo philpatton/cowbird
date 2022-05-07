@@ -5,7 +5,7 @@ Here, I present a workflow that roughly approximates our workflow in analyzing t
 
 Please note that the package requires the installation of JAGS. Please see the [JAGS website](https://mcmc-jags.sourceforge.io/) for instructions on how to download and install. 
 
-(Note: If you have [devtools](https://devtools.r-lib.org/) installed, you can install this package using `devtools::install_github('philpatton/cowbird')`)
+Note: If you have [devtools](https://devtools.r-lib.org/) installed, you can install this package using `devtools::install_github('philpatton/cowbird')`
 
 # Model fitting.
 
