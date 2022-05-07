@@ -1,9 +1,9 @@
 # cowbird
 This package contains the data and functions to recreate the analysis in "Modeling and estimating co--occurrence between the invasive Shiny Cowbird and its Puerto Rican hosts," by Patton, Pacifici, and Collazo (2022), at *Biological Invasions*.
 
-Here, I present a workflow that roughly approximates our workflow in analyzing these data, ultimately reproducing the results described in the paper, including the tables and figures. The workflow starts with training the models, checking that the MCMC algorithms converged, posterior predictitve checking, model selection, then finally inference and predicition from the chosen model. 
+Here, I present a workflow that roughly approximates our workflow in analyzing these data, ultimately reproducing the results described in the paper, including the tables and figures. The workflow starts with training the models, checking that the MCMC algorithms converged, checking the models predictions with posterior predictitve checks, selecting a model, then finally inference and predicition from the chosen model. 
 
-Please note that the package requires the installation of [JAGS](https://mcmc-jags.sourceforge.io/).
+Please note that the package requires the installation of JAGS. Please see the [JAGS website](https://mcmc-jags.sourceforge.io/) for instructions on how to download and install. 
 
 (Note: If you have [devtools](https://devtools.r-lib.org/) installed, you can install this package using `devtools::install_github('philpatton/cowbird')`)
 
@@ -33,9 +33,7 @@ params <- get_all_parameters()
 fit_list <- fit_all_models(data_list,  params, mcmc_params_paper = TRUE)
 ```
 
-In my prefered workflow, I save the `fit_list` locally and proceed from here to prevent disaster if my machine crashes. 
-
-(NOTE: There is a bug here whereby the fit_all_models function causes warnings about not being able to monitor parameters. Don't worry; the rest of the code works despite the warning.)
+In my prefered workflow, I save the `fit_list` locally and proceed from here to prevent disaster if my machine crashes. Please ignore the warning about not being able to monitor parameters; it does not affect the results. 
 
 # MCMC diagnostics.
 
