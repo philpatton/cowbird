@@ -1,7 +1,7 @@
 # cowbird
 This package contains the data and functions to recreate the analysis in "Modeling and estimating co--occurrence between the invasive Shiny Cowbird and its Puerto Rican hosts," by Patton, Pacifici, and Collazo (2022), at *Biological Invasions*.
 
-Here, I present a workflow that roughly approximates our workflow in analyzing these data, ultimately reproducing the results described in the paper, including the tables and figures. The workflow starts with training the models, checking that the MCMC algorithms converged, checking the models predictions with posterior predictitve checks, selecting a model, then finally inference and predicition from the chosen model. 
+Here, I present a workflow (also see *Vignette*) that roughly approximates our workflow in analyzing these data, ultimately reproducing the results described in the paper, including the tables and figures. The workflow starts with training the models, checking that the MCMC algorithms converged, checking the models predictions with posterior predictitve checks, selecting a model, then finally inference and predicition from the chosen model. 
 
 Please note that the package requires the installation of JAGS. Please see the [JAGS website](https://mcmc-jags.sourceforge.io/) for instructions on how to download and install. 
 
@@ -115,7 +115,7 @@ Here, we perform posterior predictive checks then choose a model with WAIC. Comp
 
 ```
 # posterior predictive check of every model (slow)
-ppc_res <- check_all_models(fit_list, dl, just_pvals = F)
+ppc_res <- check_all_models(fit_list, data_list, just_pvals = F)
 
 # table of pvalues
 ppc_table(ppc_res)
@@ -125,7 +125,7 @@ ppc <- make_figure_two(ppc_res)
 plot(ppc)
 
 # Estimate WAIC (slow)
-waic_res <- evaluate_all_models(fit_list, dl)
+waic_res <- evaluate_all_models(fit_list, data_list)
 
 # table four 
 waic_res
