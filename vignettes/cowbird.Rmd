@@ -1,97 +1,184 @@
 ---
 title: "cowbird"
 output: rmarkdown::html_vignette
+fig_width: 6
+fig_height: 4
 vignette: >
   %\VignetteIndexEntry{cowbird}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r, include = FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>"
-)
-```
-
+Begin by loading the data from the data from the package then converting it to a list for JAGS.
 
 ```{r setup}
+
 library(cowbird)
-```
 
-# `cowbird`: Functions behind the cowbird paper
+# fetch the cowbird / host community data
+data("cowbird_data")
 
-This package can be used to reproduce the analysis done in the cowbird paper.
-
-## Data 
-
-Use `data('cowbird_data')` to load in the dataset used in the paper.
-
-```{r data}
-data('cowbird_data')
-head(cowbird_data)
-```
-
-Note the misnomer: the `data.frame` contains detection data for the hosts and the cowbird. In addition, it contains one site-level covariate (land_use), and one visit-level covariate (observer_b, a dummy variable identifying the observer at the site). 
-
-`make_data_list()` converts the `data.frame` to a list for use in `rjags`
-
-```{r data_list}
+# convert it to a list (jags likes lists) 
 data_list <- make_data_list(cowbird_data)
-str(data_list)
+
 ```
 
-## Fitting models
+Then, proceed to training the models. Here, I fit all the models at once using `fit_all_models`. (It's possible to fit individual models with `fit_model`.) The `mcmc_params_paper` argument tells the function to iterate the MCMC algorithm long enough that we can reasonably check for convergence later, using the hyperparameters described in the paper. For quick model fitting, set this argument to `FALSE`. Alternatively, set each MCMC parameter, e.g., `n.burn` or `n.chains`, to your liking.
 
-There are two ways to fit the models described in the paper: fitting each model individually, or fitting them all at once. 
+# Model Training
 
-Either way, `rjags` needs a character vector of parameters whose MCMC samples you would like returned. `get_evaluation_parameters(checking_params = TRUE)` returns a vector of parameters needed to do posterior predictive checks and calculate WAIC.
+```{r fit_all_models}
+# a vector of parameters to be monitored in the MCMC fitting
+params <- get_all_parameters()
 
-```{r get_parms}
-params <- get_evaluation_parameters(checking_parameters = TRUE)
-params
-```
-
-### Fit all models
-
-`fit_all_models()` fits each model sequentially and returns a list of output from each model. For speed, I've set the MCMC parameters to very low numbers. 
-
-```{r fit_all}
+# fit models 1, 2, and 3 
 fit_list <- fit_all_models(
-  data_list, 
-  params_to_monitor = params,
-  n.chains = 1, 
-  n.adapt = 100, 
-  n.burn = 10,
-  n.iter = 10, 
-  n.thin = 1
+    data_list,  
+    params, 
+    mcmc_params_paper = FALSE,
+    n.chains = 2
 )
+
 ```
 
-### Fit one model
+In my prefered workflow, I save the `fit_list` locally and proceed from here to prevent disaster if my machine crashes. (Please ignore the warning about not being able to monitor parameters; it does not affect the results.)
 
-`fit_model()` fits one of the models from the paper individually. 
+# MCMC diagnostics.
 
-```{r fit_one}
-model1_fit <- fit_model(
-  'model_1', 
-  data_list,
-  params_to_monitor = NULL, 
-  n.chains = 1, 
-  n.adapt = 100, 
-  n.burn = 10, 
-  n.iter = 10,
-  n.thin = 1
-)
+In this section, I check to see that the algorithm converged. Because I'm using very few iterations, these tests fail.
+
+## Model 1 Diagnostics
+
+```{r mcmc_m1, fig.height = 4, fig.width = 6}
+
+# fetch the estimates from model 1
+fit1 <- fit_list$fit1
+
+# specify subset parameters for roughly diagnosing convergence 
+params <- get_hyper_parameters()
+
+# convert the output to coda class
+samps <- extract_coda_samples(fit1, params)
+
+# traceplots for high level parameters
+plot(samps$a, density = F)
+plot(samps$b, density = F)
+plot(samps$mu_c, density = F)
+plot(samps$sd_c, density = F)
+plot(samps$mu_d, density = F)
+plot(samps$sd_d, density = F)
+
+# effective sample size and gelman-rubin statistic
+ess1 <- effective_sample_size(samps)
+gr1 <- gelman_rubin(samps)
+
 ```
 
-## Checking models
+## Model 2 Diagnostics
 
-`check_all_models()` performs a posterior predictive check on the model list returned from `fit_all_models()`.
+```{r mcmc_m2, fig.height = 4, fig.width = 6}
 
-```{r check_all}
-ppc <- check_all_models(fit_list, data_list, just_pvals = TRUE)
-ppc
+fit2 <- fit_list$fit2
+
+# also want to check for convergence of host effect on cowbird
+params <- c(get_hyper_parameters(), 'kappa')
+
+samps <- extract_coda_samples(fit2, params)
+
+plot(samps$a, density = F)
+plot(samps$b, density = F)
+plot(samps$mu_c, density = F)
+plot(samps$sd_c, density = F)
+plot(samps$mu_d, density = F)
+plot(samps$sd_d, density = F)
+plot(samps$kappa, density = T)
+
+ess2 <- effective_sample_size(samps)
+gr2 <- gelman_rubin(samps)
+
 ```
 
-`check_model()` peforms a posterior predictive check of one model.
+## Model 3 Diagnostics
+
+```{r mcmc_m3, fig.height = 4, fig.width = 6}
+
+fit3 <- fit_list$fit3
+
+# also want to check for convergence of host effect on cowbird
+params <- c(get_hyper_parameters(), 'e', 'rho')
+
+samps <- extract_coda_samples(fit3, params)
+
+plot(samps$a, density = F)
+plot(samps$b, density = F)
+plot(samps$mu_c, density = F)
+plot(samps$sd_c, density = F)
+plot(samps$mu_d, density = F)
+plot(samps$sd_d, density = F)
+plot(samps$rho, density = F)
+plot(samps$e, density = F)
+
+ess3 <- effective_sample_size(samps)
+gr3 <- gelman_rubin(samps)
+
+```
+
+# Model checking and selection.
+
+Here, we perform posterior predictive checks then choose a model with WAIC. Computing both the Bayesian P-values and WAIC takes a while.
+
+```{r ppc_waic}
+
+# posterior predictive check of every model (slow)
+ppc_res <- check_all_models(fit_list, data_list, just_pvals = F)
+
+# table of pvalues
+ppc_table(ppc_res)
+
+# plot the results (figure two) 
+ppc <- make_figure_two(ppc_res)
+plot(ppc)
+
+# Estimate WAIC (slow)
+waic_res <- evaluate_all_models(fit_list, data_list)
+
+# table four 
+waic_res
+
+```
+
+# Inference and predictions.
+
+Using the model of best fit, we generate the figures and tables from the paper.
+
+```{r inference, fig.height = 4, fig.width = 6}
+
+# table one
+table_one <- make_table_one(fit_list$fit1)
+table_one 
+
+# table two
+table_two <- make_table_two(fit_list$fit2)
+table_two
+
+# table three
+table_three <- make_table_three(fit_list$fit3)
+table_three
+
+# Prediction Plots
+
+fit <- fit_list$fit1
+
+# figure three
+figure_three <- make_figure_three(fit)
+plot(figure_three)
+
+# figure four
+figure_four <- make_figure_four(fit)
+plot(figure_four)
+
+# figure five
+figure_five <- make_figure_five(fit)
+plot(figure_five)
+
+```
