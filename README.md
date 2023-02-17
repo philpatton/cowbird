@@ -1,5 +1,7 @@
 # cowbird
-This package contains the data and functions to recreate the analysis in [our paper](https://rdcu.be/cOIqG) "Modeling and estimating co--occurrence between the invasive Shiny Cowbird and its Puerto Rican hosts," by Patton, Pacifici, and Collazo (2022), at *Biological Invasions*.
+This package contains the data and functions to recreate the analysis in [our paper](https://rdcu.be/cOIqG):
+
+Patton, P.T., Pacifici, K. & Collazo, J.A. Modeling and estimating co-occurrence between the invasive Shiny Cowbird and its Puerto Rican hosts. *Biol Invasions* 24, 2951–2960 (2022). https://doi.org/10.1007/s10530-022-02825-3
 
 Here, I present a workflow that roughly approximates our workflow in analyzing these data, ultimately reproducing the results described in the paper, including the tables and figures. The workflow starts with training the models, checking that the MCMC algorithms converged, checking the models predictions with posterior predictitve checks, selecting a model, then finally inference and predicition from the chosen model. 
 
